@@ -17,7 +17,7 @@ const loading = document.getElementById('loading') as HTMLElement;
 
 let currentPage = "";
 
-function loadPage(userRole: string | null) {
+async function loadPage(userRole: string | null) {
   loading.classList.remove('hide');
   if (currentPage === "") {
     document.title = 'Buzznote';
@@ -30,7 +30,7 @@ function loadPage(userRole: string | null) {
   if (oldMain) oldMain.remove();
   switch (currentPage) {
     case "start New Inspection":
-      const startPage = startInspection();
+      const startPage = await startInspection();
       loading.classList.add('hide');
       pageWrapper.appendChild(startPage);
       backButton.addEventListener('click', () => {

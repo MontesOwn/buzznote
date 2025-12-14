@@ -1,6 +1,0 @@
-@media (max-width: 630px) {
-    .header-row {justify-content: space-between;}
-    .item-1 { order: 1; }
-    .item-2 { order: 3; }
-    .item-3 { order: 2; }
-}

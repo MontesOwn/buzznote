@@ -1,0 +1,28 @@
+#page-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 70px 40px auto;
+  grid-template-areas:
+    "spacer"
+    "message-area"
+    "main";
+  height: 100vh;
+}
+
+#spacer {
+    display: block;
+}
+
+#message-area {
+  grid-area: message-area;
+}
+
+main {
+    grid-area: main;
+}
+
+@media (min-width: 1045px) {
+  #page-wrapper {
+    justify-items: center;
+  }
+}

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f2a007">
+  <link href="src/css/style.css" rel="stylesheet" />
+  <link href="src/css/grid.css" rel="stylesheet" />
+  <title>buzznote</title>
+</head>
+
+<body>
+  <header>
+    <button id="back-button" type="button" class="material-symbols-outlined">arrow_back</button>
+    <div id="title-container">
+      <h1><a href="#">BuzzNote Demo App</a></h1>
+    </div>
+    <section id="account-container">
+      <button id="sign-in" class="account-button">Sign in</button>
+      <button id="sign-out" class="account-button hide">Sign out</button>
+    </section>
+  </header>
+  <div id="page-wrapper">
+    <div id="spacer"></div>
+    <div id="loading">
+      <img src="images/loading.gif"/>
+    </div>
+    <section class="message-wrapper" id="main-message"></section>
+    <main></main>
+  </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>

@@ -13,7 +13,7 @@
     display: block;
 }
 
-#message-area {
+#main-message {
   grid-area: message-area;
 }
 

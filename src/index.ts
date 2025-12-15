@@ -1,19 +1,39 @@
-import { createButton } from "./modules/utils";
+import { createButton, makeElement, createLink } from "./modules/utils";
+import { initializeApp } from "./main";
+import { getUserRole } from "./firebase/authService";
+import { auth } from "./firebase/firebase";
 
-export function loadIndex(userRole: string | null) {
+const pageWrapper = document.getElementById('page-wrapper') as HTMLElement;
+const loading = document.getElementById('loading');
+
+async function updateUIbasedOnAuth(userRole: string | null) {
     const mainElement = document.createElement('main');
-    const buttonGroup = document.createElement('section');
-    buttonGroup.setAttribute('class', 'button-group-column');
+    const buttonGroup = makeElement('section', 'options', 'button-group-column', null);
     if (userRole === "admin") {
-        const startNewInspection = createButton("Start New Inspection", "button", "start-inspection", 'large full button green');
+        // const startNewInspection = createLink("Start New Inspection", "/hives-selector", false, 'large full button green', null)
+        const startNewInspection = createLink("Start New Inspection (Coming Soon)", "#", false, 'large full button grey', null);
         buttonGroup.appendChild(startNewInspection);
-        const manageHives = createButton("Manage Hives", 'button', 'manage-hives', 'large full button purple');
+        // const manageHives = createLink("Manage Hives", '/manage-hive', false, 'large full button purple', null);
+        const manageHives = createLink("Manage Hives (Coming Soon)", '#', false, 'large full button grey', null);
         buttonGroup.appendChild(manageHives);
     }
-    const viewPastInspections = createButton("View Past Inspections", 'button', 'view-past', 'large full button orange');
+    const viewPastInspections = createLink("View Past Inspections", "/past/", false, 'large full button orange', null)
     buttonGroup.appendChild(viewPastInspections);
-    const search = createButton("Search", 'button', 'search', 'large full button blue');
+    const search = createButton("Search (Coming Soon)", 'button', 'search', 'large full button blue');
     buttonGroup.appendChild(search)
     mainElement.appendChild(buttonGroup);
-    return mainElement;
+    const oldMain = pageWrapper.querySelector('main') as HTMLElement;
+    pageWrapper.replaceChild(mainElement, oldMain);
+    if (loading) loading.classList.add('hide');
 }
+
+initializeApp("").then(async () => {
+    auth.onAuthStateChanged(async (user) => {
+    let userRole: string | null = null;
+    if (user) {
+      userRole = await getUserRole(user.uid);
+    }
+    updateUIbasedOnAuth(userRole);
+  });
+})
+

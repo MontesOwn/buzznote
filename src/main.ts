@@ -1,83 +1,54 @@
 import { createMessage, makeElement } from "./modules/utils";
-import { loadIndex } from ".";
 import {
-  getUserRole,
   signInWithGooglePopup,
   signOutUser,
-  type User
 } from "./firebase/authService";
 import { auth } from "./firebase/firebase";
-import { startInspection } from "./start-inspection";
 
-const pageWrapper = document.getElementById('page-wrapper') as HTMLElement;
-const backButton = document.getElementById('back-button') as HTMLElement;
 const signInButton = document.getElementById('sign-in') as HTMLElement;
 const signOutButton = document.getElementById('sign-out') as HTMLElement;
-const loading = document.getElementById('loading') as HTMLElement;
+const headerTitle = document.getElementById('header-title') as HTMLElement;
+const accountContainer = document.getElementById('account-container') as HTMLElement;
 
-let currentPage = "";
-
-async function loadPage(userRole: string | null) {
-  loading.classList.remove('hide');
-  if (currentPage === "") {
-    document.title = 'Buzznote';
-    backButton.classList.add('hide');
-  } else {
-    backButton.classList.remove('hide');
-    document.title = `${currentPage} - Buzznote`;
-  }
-  const oldMain = document.querySelector('main');
-  if (oldMain) oldMain.remove();
-  switch (currentPage) {
-    case "start New Inspection":
-      const startPage = await startInspection();
-      loading.classList.add('hide');
-      pageWrapper.appendChild(startPage);
-      backButton.addEventListener('click', () => {
-        currentPage = "";
-        sessionStorage.setItem('current-page', "");
-        loadPage(userRole);
-      });
-      break;
-    default:
-      const indexPage = loadIndex(userRole);
-      const startButton = indexPage.querySelector('#start-inspection');
-      if (startButton) {
-        startButton.addEventListener('click', () => {
-          currentPage = "start New Inspection";
-          sessionStorage.setItem('current-page', "start New Inspection");
-          loadPage(userRole);
-        });
-      }
-      loading.classList.add('hide');
-      pageWrapper.appendChild(indexPage);
-      break;
-  }
-}
-
-async function startApp() {
-  auth.onAuthStateChanged(async (user: User | null) => {
-    let userRole: string | null = null;
+function setUpAuthListener() {
+  auth.onAuthStateChanged((user) => {
+    const usernameP = accountContainer.querySelector('p');
     if (user) {
       //User is signed in
       //Hide the sign in button and show the sign out button
-      if (user.displayName) {
-        const accountContainer = document.getElementById('account-container') as HTMLElement;
-        const username = makeElement('p', `${user.displayName} | `);
-        accountContainer.prepend(username);
-      }
       signInButton.classList.add('hide');
       signOutButton.classList.remove('hide');
-      userRole = await getUserRole(user.uid);
+      //Set the username
+      if (usernameP) {
+        usernameP.textContent = `${user.displayName} |`;
+      } else {
+        const username = makeElement('p', 'username', null, `${user.displayName} |`);
+        accountContainer.prepend(username);
+      }
     } else {
       //User is not signed in
+      //Make sure the sign in button is displayed and the sign out button is not displayed
+      if (usernameP) usernameP.remove();
       signInButton.classList.remove('hide');
       signOutButton.classList.add('hide');
     }
-    const sessionPage = sessionStorage.getItem('current-page');
-    if (sessionPage) currentPage = sessionPage;
-    loadPage(userRole);
   });
+}
+
+export async function initializeApp(currentPage: string) {
+  if (currentPage !== "") {
+    //Set the page title
+    document.title = `${currentPage} - Buzznote`;
+  }
+  //Wait for the DOM to load
+  await new Promise<void>(resolve => {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => resolve(), { once: true });
+    } else {
+      resolve();
+    }
+  });
+  setUpAuthListener();
 
   signInButton.addEventListener("click", async (e) => {
     e.preventDefault();
@@ -111,6 +82,6 @@ async function startApp() {
   signOutButton.addEventListener("click", () => {
     signOutUser();
   });
-}
 
-await startApp();
+  headerTitle.addEventListener('click', () => window.location.href = '/');
+}

@@ -1,6 +1,6 @@
 import { getBoxesForHiveID } from "./database/boxService";
 import { initializeApp } from "./main";
-import type { Box, Frame } from "./models";
+import type { Box } from "./models";
 import {
     createButton,
     makeElement,
@@ -33,7 +33,7 @@ function showBoxSelection() {
 }
 
 function showFramesSection(currentBox: Box) {
-    let frames: Frame[] = [];
+    // let frames: Frame[] = [];
     framesSection.classList.remove('hide');
     for (let i = 0; i < currentBox['num_frames']; i++) {
         framesSection.innerHTML = '';

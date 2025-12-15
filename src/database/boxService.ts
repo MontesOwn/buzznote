@@ -32,9 +32,9 @@ export async function getBoxForBoxId(boxId: number) {
   return data
 }
 
-export async function addBox(box: Box) {
+// export async function addBox(box: Box) {
 
-}
+// }
 
 export async function updateBox(boxId: number, box: Box) {
   try {

@@ -1,5 +1,5 @@
 import { initializeApp } from "./main";
-import { createMessage, createListTable, createItemTable, makeElement } from "./modules/utils";
+import { createMessage, createItemTable, makeElement } from "./modules/utils";
 import { getInspectionForId } from "./database/inspectionService";
 
 const mainElement = document.querySelector('main') as HTMLElement;

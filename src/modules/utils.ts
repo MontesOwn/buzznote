@@ -1,4 +1,4 @@
-import { Average, Inspection, InspectionListItem } from "../models";
+import { Inspection, InspectionListItem } from "../models";
 
 export function createButton(
   buttonText: string,

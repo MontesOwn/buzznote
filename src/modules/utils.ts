@@ -1,4 +1,4 @@
-import { Inspection, InspectionListItem } from "../models";
+import { AverageDetail, Frame, Inspection, InspectionListItem } from "../models";
 
 export function createButton(
   buttonText: string,
@@ -170,7 +170,7 @@ export function getStartTime() {
   return `${hours}:${minutes}`;
 }
 
-function createTableHead(columnHeaders: string[]) {
+export function createTableHead(columnHeaders: string[]) {
   const tableHead = columnHeaders.reduce(
     (acc: HTMLElement, currentColumnHeader: string) => {
       const newColumnHeader = document.createElement("th");
@@ -188,20 +188,28 @@ function createTableHead(columnHeaders: string[]) {
   return tableHead;
 }
 
-export function createListTable(itemsArray: InspectionListItem[], columnHeaders: string[]) {
-  const table = makeElement("table", null, "table table-striped table-hover", null);
+type TableItem = InspectionListItem | AverageDetail | Frame | {};
+
+export function createRowForListTable(item: TableItem, columnHeaders: string[], itemId: string) {
+  const newRow = document.createElement('tr');
+  newRow.setAttribute('id', itemId);
+  for (const key of columnHeaders) {
+    const newCell = document.createElement("td");
+    const itemValue = (item as any)[key];
+    const valueString = document.createTextNode(itemValue?.toString() || "");
+    newCell.appendChild(valueString);
+    newRow.appendChild(newCell);
+  }
+  return newRow;
+}
+
+export function createListTable(itemsArray: InspectionListItem[] | AverageDetail[] | Frame[], columnHeaders: string[], primaryIdKeyName: string) {
+  const table = makeElement("table", null, null, null);
   const tableHead = createTableHead(columnHeaders);
   table.appendChild(tableHead);
-  const tableBody = itemsArray.reduce((acc: HTMLElement, currentItem: InspectionListItem) => {
-    const newRow = document.createElement('tr');
-    newRow.setAttribute('id', currentItem['inspection_id'].toString());
-    for (const key of columnHeaders) {
-      const newCell = document.createElement("td");
-      const itemValue = (currentItem as any)[key];
-      const valueString = document.createTextNode(itemValue?.toString() || "");
-      newCell.appendChild(valueString);
-      newRow.appendChild(newCell);
-    }
+  const tableBody = itemsArray.reduce((acc: HTMLElement, currentItem: InspectionListItem | AverageDetail | Frame) => {
+    const itemId = (currentItem as any)[primaryIdKeyName]?.toString() || "";
+    const newRow = createRowForListTable(currentItem, columnHeaders, itemId);
     acc.appendChild(newRow);
     return acc;
   }, document.createElement('tbody'));
@@ -209,22 +217,28 @@ export function createListTable(itemsArray: InspectionListItem[], columnHeaders:
   return table;
 }
 
-export function createItemTable(item: Inspection, columnHeaders: string[]) {
-  const table = makeElement("table", null, "table table-striped table-hover", null);
+export function createItemTable(item: Inspection | AverageDetail, columnHeaders: string[], primaryIdKeyName: string) {
+  if (Object.keys(item).includes('weather_temp')) {
+    item = item as Inspection;
+  }
+  const table = makeElement("table", null, null, null);
   const tableHead = createTableHead(columnHeaders);
   table.appendChild(tableHead);
   const tableBody = document.createElement('tbody');
   const newRow = columnHeaders.reduce((acc: HTMLElement, key: string) => {
     const newCell = document.createElement('td');
-    if (key === "weather") {
+    if (item instanceof Inspection && key === "weather") {
       const weather = document.createTextNode(`${item['weather_temp']}°F ${item['weather_condition']}`);
       newCell.appendChild(weather);
-    } else if (key === "brood") {
+    } else if (item instanceof Inspection && key === "brood") {
       const broodArray = [];
       if (item['brood_eggs']) broodArray.push("Eggs");
       if (item['brood_larva']) broodArray.push("Larva");
       if (item['brood_capped']) broodArray.push("Capped");
       newCell.innerHTML = broodArray.join("<br/>");
+    } else if (key === "expand") {
+      const expandButton = createButton("expand_all", 'button', `expand-${primaryIdKeyName}`, 'material-symbols-outlined');
+      newCell.appendChild(expandButton);
     } else {
       const itemValue = (item as any)[key];
       const valueString = document.createTextNode(itemValue?.toString() || "");
@@ -236,4 +250,14 @@ export function createItemTable(item: Inspection, columnHeaders: string[]) {
   tableBody.appendChild(newRow);
   table.appendChild(tableBody);
   return table;
+}
+
+export function formatDateTime(date: Date): string {
+  const year = date.getFullYear();
+  const month = ('0' + (date.getMonth() + 1)).slice(-2);
+  const day = ('0' + date.getDate()).slice(-2);
+  const hours = ('0' + date.getHours()).slice(-2);
+  const minutes = ('0' + date.getMinutes()).slice(-2);
+  const seconds = ('0' + date.getSeconds()).slice(-2);
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }

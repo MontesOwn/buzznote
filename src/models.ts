@@ -17,6 +17,7 @@ export class Inspection {
     public brood_capped: boolean;
     public queen_spotted: boolean;
     public notes: string;
+    public last_updated: string;
 
     constructor(
         inspection_id: number,
@@ -36,7 +37,8 @@ export class Inspection {
         brood_larva: boolean,
         brood_capped: boolean,
         queen_spotted: boolean,
-        notes: string
+        notes: string,
+        last_updated: string
     ) {
         this.inspection_id = inspection_id;
         this.hive_id = hive_id;
@@ -56,6 +58,7 @@ export class Inspection {
         this.brood_capped = brood_capped;
         this.queen_spotted = queen_spotted;
         this.notes = notes;
+        this.last_updated = last_updated;
     }
 }
 
@@ -131,7 +134,7 @@ export class AverageDetail {
         public queen_cells: string;
         public drawn_comb: string;
         public queen_spotted: string;
-        public showFrames: boolean;
+        public showFrames: boolean = false;
     constructor(
         average_id: number,
         inspection_id: number,
@@ -154,18 +157,9 @@ export class AverageDetail {
         this.queen_cells = queen_cells;
         this.drawn_comb = drawn_comb;
         this.queen_spotted = queen_spotted;
-        this.showFrames = false;
     }
 }
 
-export class Notes {
-    public notes: string;
-    constructor(
-        notes: string
-    ) {
-        this.notes = notes;
-    }
-}
 
 export class Hive {
     public hive_id: number;

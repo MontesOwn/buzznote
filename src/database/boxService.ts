@@ -21,15 +21,19 @@ export async function getBoxesForHiveID(hiveID: number, active: boolean): Promis
 }
 
 export async function getBoxForBoxId(boxId: number) {
-  const response = await fetch(`${baseURL}/${boxId}`);
+  try {
+    const response = await fetch(`${baseURL}/${boxId}`);
 
-  if (!response.ok) {
-    const errorMessage = await response.json();
-    throw new Error(`${errorMessage.status_code} - ${errorMessage.message}`);
+    if (!response.ok) {
+      const errorMessage = await response.json();
+      throw new Error(`${errorMessage.status_code} - ${errorMessage.message}`);
+    }
+
+    const data = await response.json() as Box;
+    return data;
+  } catch (error) {
+    throw error;
   }
-
-  const data = await response.json() as Box;
-  return data
 }
 
 // export async function addBox(box: Box) {

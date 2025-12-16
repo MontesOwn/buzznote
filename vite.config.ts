@@ -36,7 +36,7 @@ export default defineConfig({
     workbox: {
       globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
       cleanupOutdatedCaches: true,
-      ignoreURLParametersMatching: [/^year$/, /^inspectionId$/, /^utm_/, /^fbclid$/],
+      ignoreURLParametersMatching: [/^year$/, /^inspectionId$/, /^sentFrom$/, /^utm_/, /^fbclid$/],
       clientsClaim: true,
     },
 

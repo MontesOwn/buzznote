@@ -1,4 +1,4 @@
-import { Inspection, InspectionListItem, Notes } from "../models";
+import { Inspection, InspectionListItem } from "../models";
 
 const baseURL: string = "https://montesown.com/buzznote-api/inspections";
 
@@ -54,40 +54,21 @@ export async function createInspection(inspection: Inspection) {
     }
 }
 
-export async function updateNotes(inspectionId: number, notes: Notes): Promise<Inspection> {
-    try {
-        const response = await fetch(`${baseURL}/${inspectionId}/notes`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(notes),
-        });
-
-        if (!response.ok) {
-            const errorMessage = await response.json();
-            throw new Error(`${errorMessage.status_code} - ${errorMessage.message}`);
-        }
-
-        const data = await response.json() as Inspection;
-        return data;
-    } catch (error: any) {
-        throw error;
-    }
-}
-
 export async function updateInspection(inspection: Inspection): Promise<Inspection> {
     try {
+        console.log(`${baseURL}/${inspection['inspection_id']}`)
         const response = await fetch(`${baseURL}/${inspection['inspection_id']}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(inspection),
         });
-
         if (!response.ok) {
             const errorMessage = await response.json();
             throw new Error(`${errorMessage.status_code} - ${errorMessage.message}`);
         }
 
         const data = await response.json() as Inspection;
+        console.log(data);
         return data;
     } catch (error: any) {
         throw error;

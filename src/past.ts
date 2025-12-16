@@ -55,18 +55,25 @@ function displayInspections(year: string) {
     const inspectionsToShow = filterInspectionsForYear(year);
     const columnHeaders: string[] = ['hive_name', 'inspection_date', 'start_time', 'num_boxes', 'total_frames'];
     if (inspectionsToShow) {
-        const inspectionsTable = createListTable(inspectionsToShow, columnHeaders);
+        const inspectionsTable = createListTable(inspectionsToShow, columnHeaders, "inspection_id");
+        inspectionsTable.classList.add('table-clickable');
         const rows = inspectionsTable.querySelectorAll('tr');
-        rows.forEach(row => row.addEventListener('click', () => window.location.href = `/past/inspectionDetail?inspectionId=${row.id}`));
+        rows.forEach(row => row.addEventListener('click', () => window.location.href = `/past/inspectionDetail?sentFrom=past&year=${year}&inspectionId=${row.id}`));
         mainElement.appendChild(inspectionsTable);
     }
 }
 
 initializeApp("Past Inspections").then(async () => {
     try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const year = urlParams.get('year');
         inspections = await getListOfInspections();
         getYears();
-        displayInspections(yearsList[yearsList.length - 1]);
+        if (year) {
+            displayInspections(year);
+        } else {
+            displayInspections(yearsList[yearsList.length - 1]);
+        }
         loading.classList.add('hide');
     } catch (error: any) {
         loading.classList.add('hide');

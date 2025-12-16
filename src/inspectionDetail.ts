@@ -1,7 +1,7 @@
 import { initializeApp } from "./main";
-import { createMessage, createItemTable, makeElement, createButton, formatDateTime, createListTable, createTableHead, createRowForListTable } from "./modules/utils";
+import { createMessage, createItemTable, makeElement, createButton, formatDateTime, createListTable } from "./modules/utils";
 import { getInspectionForId, updateInspection } from "./database/inspectionService";
-import { AverageDetail, Frame, Inspection } from "./models";
+import { Frame, Inspection } from "./models";
 import { getAverageForId } from "./database/averageService";
 import { getFramesForInspectionIDAndBoxName } from "./database/frameService";
 

@@ -1,7 +1,7 @@
 import { initializeApp } from "./main";
 import { createMessage, createItemTable, makeElement, createButton, formatDateTime, createListTable, createLink } from "./modules/utils";
 import { getInspectionForId, updateInspection } from "./services/inspectionService";
-import { Frame, Inspection, InspectionListItem } from "./models";
+import { Frame, Inspection } from "./models";
 import { getAverageForId } from "./services/averageService";
 import { getFramesForInspectionIDAndBoxName } from "./services/frameService";
 import { auth } from "./firebase/firebase";

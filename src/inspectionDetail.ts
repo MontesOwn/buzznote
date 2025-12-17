@@ -1,9 +1,11 @@
 import { initializeApp } from "./main";
-import { createMessage, createItemTable, makeElement, createButton, formatDateTime, createListTable } from "./modules/utils";
-import { getInspectionForId, updateInspection } from "./database/inspectionService";
-import { Frame, Inspection } from "./models";
-import { getAverageForId } from "./database/averageService";
-import { getFramesForInspectionIDAndBoxName } from "./database/frameService";
+import { createMessage, createItemTable, makeElement, createButton, formatDateTime, createListTable, createLink } from "./modules/utils";
+import { getInspectionForId, updateInspection } from "./services/inspectionService";
+import { Frame, Inspection, InspectionListItem } from "./models";
+import { getAverageForId } from "./services/averageService";
+import { getFramesForInspectionIDAndBoxName } from "./services/frameService";
+import { auth } from "./firebase/firebase";
+import { getUserRole } from "./firebase/authService";
 
 const mainElement = document.querySelector('main') as HTMLElement;
 const backButton = document.getElementById('back-button') as HTMLElement;
@@ -11,12 +13,16 @@ const loading = document.getElementById('loading') as HTMLElement;
 
 function setBackHref(sentFrom: string, year: string | null) {
     switch (sentFrom) {
-        case "past":
+        case "search":
+            backButton.setAttribute('href', "/search");
+            break;
+        default:
             if (year) {
                 backButton.setAttribute('href', `/past/?year=${year}`);
             } else {
                 backButton.setAttribute('href', '/past/');
             }
+            break;
     }
 }
 
@@ -38,14 +44,21 @@ async function submitData(formData: FormData, inspeciton: Inspection) {
 }
 
 function displayNotes(inspeciton: Inspection) {
+    let inspecitonHasNotes: boolean = false;
     const editNotesForm = document.getElementById('edit-notes-form');
     if (editNotesForm) editNotesForm.remove();
     const notesDiv = makeElement("div", 'notes-display', null, null);
-    const notesHeading = makeElement("h2", null, null, "Notes");
-    notesDiv.appendChild(notesHeading);
-    const notesP = document.createElement('p');
-    notesP.textContent = inspeciton['notes'];
-    notesDiv.appendChild(notesP);
+    if (!inspeciton['notes'] || inspeciton['notes'].toString().trim() === "") {
+        const notesHeading = makeElement("h2", null, null, "No Notes");
+        notesDiv.appendChild(notesHeading);
+    } else {
+        inspecitonHasNotes = true;
+        const notesHeading = makeElement("h2", null, null, "Notes");
+        notesDiv.appendChild(notesHeading);
+        const notesP = document.createElement('p');
+        notesP.textContent = inspeciton['notes'];
+        notesDiv.appendChild(notesP);
+    }
     if (inspeciton['last_updated']) {
         const lastUpdatedP = document.createElement('p');
         const updatedKey = makeElement('b', null, null, "Last Updated: ");
@@ -54,20 +67,39 @@ function displayNotes(inspeciton: Inspection) {
         lastUpdatedP.appendChild(updatedValue);
         notesDiv.appendChild(lastUpdatedP);
     }
-    const addNotesButton = createButton("Add/Edit Notes", 'button', 'edit-button', 'button white', "edit");
-    addNotesButton.addEventListener('click', () => displayEditNotesForm(inspeciton));
-    notesDiv.appendChild(addNotesButton);
+    auth.onAuthStateChanged(async (user) => {
+        let userRole: string | null = null;
+        if (user) {
+            userRole = await getUserRole(user.uid);
+            if (userRole === "admin") {
+                if (inspecitonHasNotes) {
+                    const editNotesButton = createButton("Edit Notes", 'button', 'edit-button', 'button white', "edit");
+                    editNotesButton.addEventListener('click', () => displayEditNotesForm(inspeciton, inspecitonHasNotes));
+                    notesDiv.appendChild(editNotesButton);
+                } else {
+                    const addNotesButton = createButton("Add Notes", 'button', 'edit-button', 'button white', "add");
+                    addNotesButton.addEventListener('click', () => displayEditNotesForm(inspeciton, inspecitonHasNotes));
+                    notesDiv.appendChild(addNotesButton);
+                }
+            }
+        }
+    });
     mainElement.appendChild(notesDiv);
 }
 
-function displayEditNotesForm(inspeciton: Inspection) {
+function displayEditNotesForm(inspeciton: Inspection, inspecitonHasNotes: boolean) {
     const notesDiv = document.getElementById('notes-display');
     if (notesDiv) notesDiv.remove();
     const editNotesForm = makeElement("form", 'edit-notes-form', null, null) as HTMLFormElement;
     const formMessage = makeElement("section", "edit-message", "message-wrapper", null);
     editNotesForm.appendChild(formMessage);
-    const formHeading = makeElement("h2", null, null, "Add/Edit Notes:");
-    editNotesForm.appendChild(formHeading);
+    if (inspecitonHasNotes) {
+        const formHeading = makeElement("h2", null, null, "Edit Notes:");
+        editNotesForm.appendChild(formHeading);
+    } else {
+        const formHeading = makeElement("h2", null, null, "Add Notes:");
+        editNotesForm.appendChild(formHeading);
+    }
     const textAreaInput: HTMLTextAreaElement = document.createElement('textarea');
     textAreaInput.id = 'textAreaInput';
     textAreaInput.name = 'textAreaInput';
@@ -109,6 +141,16 @@ function makeLegendKey(frameType: string) {
     return newKeyDiv;
 }
 
+function makeLinkHref(id: number, sentFrom: string | null, year: string | null) {
+    if (sentFrom && year) {
+        return `inspectionDetail?sentFrom=${sentFrom}&year=${year}&inspectionId=${id}`;
+    } else if (sentFrom) {
+        return `inspectionDetail?sentFrom=${sentFrom}&inspectionId=${id}`;
+    }
+    return `inspectionDetail?inspectionId=${id}`;
+
+}
+
 initializeApp("Loading").then(async () => {
     try {
         const urlParams = new URLSearchParams(window.location.search);
@@ -124,8 +166,31 @@ initializeApp("Loading").then(async () => {
             const inspectionId = parseInt(idString);
             const inspeciton = await getInspectionForId(inspectionId);
             document.title = `${inspeciton['inspection_date']} - Buzznote`;
+            //Create the inspectino header including previous and next buttons
+            const inspecitonIdArrayString = sessionStorage.getItem("inspectionIds");
+            const inspecitonHeader = makeElement("section", "inspection-header", null, null);
             const inspectionHeading = makeElement("h2", null, null, `${inspeciton['hive_name']} | ${inspeciton['inspection_date']} | ${inspeciton['start_time']}`);
-            mainElement.appendChild(inspectionHeading);
+            inspecitonHeader.appendChild(inspectionHeading);
+            if (inspecitonIdArrayString) {
+                const inspecitonIdArray: number[] = JSON.parse(inspecitonIdArrayString);
+                const currentIndex = inspecitonIdArray.findIndex(currID =>
+                    currID.toString() === idString
+                );
+                if (currentIndex > 0) {
+                    const previousLink = makeLinkHref(inspecitonIdArray[currentIndex - 1], sentFrom, year)
+                    const previousButton = createLink("Previous", previousLink, false, "button white", null);
+                    previousButton.setAttribute("id", "previous-button");
+                    inspecitonHeader.appendChild(previousButton);
+
+                }
+                if (currentIndex < inspecitonIdArray.length - 1) {
+                    const nextLink = makeLinkHref(inspecitonIdArray[currentIndex + 1], sentFrom, year);
+                    const nextButton = createLink("Next", nextLink, false, "button white", null);
+                    nextButton.setAttribute("id", "next-button");
+                    inspecitonHeader.appendChild(nextButton);
+                }
+            }
+            mainElement.appendChild(inspecitonHeader);
             //Display the inspection details
             const inspectionColumnHeaders: string[] = [
                 'weather',

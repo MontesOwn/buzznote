@@ -6,6 +6,8 @@ export async function getAllHives(active: boolean) {
     let url: string = ""
     if (active) {
         url = baseURL + "active";
+    } else {
+        url = baseURL;
     }
     const response = await fetch(url);
 

@@ -5,10 +5,10 @@ import {
     getStartTime,
     createMessage
 } from "./modules/utils";
-import { getAllHives } from "./database/hiveService";
+import { getAllHives } from "./services/hiveService";
 import type { Hive } from "./models";
 import { initializeApp } from "./main";
-import { getCurrentWeather } from "./weatherService";
+import { getCurrentWeather } from "./services/weatherService";
 
 const pageWrapper = document.getElementById('page-wrapper') as HTMLElement;
 const loading = document.getElementById('loading') as HTMLElement;

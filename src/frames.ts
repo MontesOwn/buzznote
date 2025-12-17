@@ -1,4 +1,4 @@
-import { getBoxesForHiveID } from "./database/boxService";
+import { getBoxesForHiveID } from "./services/boxService";
 import { initializeApp } from "./main";
 import type { Box } from "./models";
 import {

@@ -1,5 +1,5 @@
-import { TempAndCondition } from "./models";
-import { loadData } from "./modules/utils";
+import { TempAndCondition } from "../models";
+import { loadData } from "../modules/utils";
 
 interface WeatherData {
     latitude: number;
@@ -67,3 +67,16 @@ export async function getCurrentWeather() {
     const data: WeatherData = await loadData(`${apiUrl}?latitude=${latitude}&longitude=${longitude}&current_weather=true&temperature_unit=${temperatureUnit}&timezone=${timezone}`);
     return new TempAndCondition(data['current_weather']['temperature'], parseWeatherCode(data['current_weather']['weathercode']));
 }
+
+export const WeatherConditionsArray: string[] = [
+  "Clear Sky", 
+  "Drizzle",
+  "Freezing Rain",
+  "Fog",
+  "Partly Cloudy", 
+  "Overcast",
+  "Rain",
+  "Snow",
+  "Thunderstorm",
+  "Unknown"
+];

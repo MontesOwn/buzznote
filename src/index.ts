@@ -19,7 +19,7 @@ async function updateUIbasedOnAuth(userRole: string | null) {
     }
     const viewPastInspections = createLink("View Past Inspections", "/past/", false, 'large full button orange', null)
     buttonGroup.appendChild(viewPastInspections);
-    const search = createButton("Search (Coming Soon)", 'button', 'search', 'large full button grey');
+    const search = createLink("Search", "/search", false, "large full button blue", null);
     buttonGroup.appendChild(search)
     mainElement.appendChild(buttonGroup);
     const oldMain = pageWrapper.querySelector('main') as HTMLElement;

@@ -5,3 +5,24 @@ textarea {
     font-size: 15px;
     font-family: "Roboto Slab";
 }
+
+.form-row {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+
+input[type="date"],
+input[type="number"],
+select {
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 15px;
+    font-family: "Roboto Slab";
+    background-color: white;
+}
+
+input[type="number"] {
+    width: 100px;
+}

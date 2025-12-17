@@ -56,7 +56,6 @@ export async function createInspection(inspection: Inspection) {
 
 export async function updateInspection(inspection: Inspection): Promise<Inspection> {
     try {
-        console.log(`${baseURL}/${inspection['inspection_id']}`)
         const response = await fetch(`${baseURL}/${inspection['inspection_id']}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -68,7 +67,6 @@ export async function updateInspection(inspection: Inspection): Promise<Inspecti
         }
 
         const data = await response.json() as Inspection;
-        console.log(data);
         return data;
     } catch (error: any) {
         throw error;

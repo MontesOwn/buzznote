@@ -13,7 +13,8 @@ export default defineConfig({
         hives: resolve(__dirname, "hives-selector.html"),
         frames: resolve(__dirname, "frames.html"),
         past: resolve(__dirname, "past/index.html"),
-        inspectionDetail: resolve(__dirname, "past/inspectionDetail.html")
+        inspectionDetail: resolve(__dirname, "past/inspectionDetail.html"),
+        search: resolve(__dirname, "search.html")
       },
     },
   },

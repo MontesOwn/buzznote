@@ -4,7 +4,6 @@ const baseURL: string = "https://montesown.com/buzznote-api/averages";
 
 export async function getAverageForId(inspectionId: number): Promise<AverageDetail[] | null> {
     try {
-        console.log(`${baseURL}/${inspectionId}`)
         const response = await fetch(`${baseURL}/${inspectionId}`);
 
         if (!response.ok) {

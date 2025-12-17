@@ -218,24 +218,28 @@ export function createListTable(itemsArray: InspectionListItem[] | AverageDetail
 }
 
 export function createItemTable(item: Inspection | AverageDetail, columnHeaders: string[], primaryIdKeyName: string) {
-  if (Object.keys(item).includes('weather_temp')) {
-    item = item as Inspection;
-  }
   const table = makeElement("table", null, null, null);
   const tableHead = createTableHead(columnHeaders);
   table.appendChild(tableHead);
   const tableBody = document.createElement('tbody');
   const newRow = columnHeaders.reduce((acc: HTMLElement, key: string) => {
     const newCell = document.createElement('td');
-    if (item instanceof Inspection && key === "weather") {
-      const weather = document.createTextNode(`${item['weather_temp']}°F ${item['weather_condition']}`);
-      newCell.appendChild(weather);
-    } else if (item instanceof Inspection && key === "brood") {
-      const broodArray = [];
-      if (item['brood_eggs']) broodArray.push("Eggs");
-      if (item['brood_larva']) broodArray.push("Larva");
-      if (item['brood_capped']) broodArray.push("Capped");
-      newCell.innerHTML = broodArray.join("<br/>");
+    if (primaryIdKeyName === "inspection_id") {
+      const inspectionItem = item as Inspection;
+      if (key === "weather") {
+        const weather = document.createTextNode(`${inspectionItem['weather_temp']}°F ${inspectionItem['weather_condition']}`);
+        newCell.appendChild(weather);
+      } else if (key === "brood") {
+        const broodArray = [];
+        if (inspectionItem['brood_eggs']) broodArray.push("Eggs");
+        if (inspectionItem['brood_larva']) broodArray.push("Larva");
+        if (inspectionItem['brood_capped']) broodArray.push("Capped");
+        newCell.innerHTML = broodArray.join("<br/>");
+      } else {
+        const itemValue = (item as any)[key];
+        const valueString = document.createTextNode(itemValue?.toString() || "");
+        newCell.appendChild(valueString);
+      }
     } else if (key === "expand") {
       const expandButton = createButton("expand_all", 'button', `expand-${primaryIdKeyName}`, 'material-symbols-outlined');
       newCell.appendChild(expandButton);
@@ -260,4 +264,28 @@ export function formatDateTime(date: Date): string {
   const minutes = ('0' + date.getMinutes()).slice(-2);
   const seconds = ('0' + date.getSeconds()).slice(-2);
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+export function createInput(inputType: string, name: string, labelText: string | null) {
+  const newInput = makeElement("input", name, null, null);
+  newInput.setAttribute("type", inputType);
+  newInput.setAttribute("name", name);
+  if (labelText) {
+    const containerDiv = makeElement("div", null, "input-and-label", null);
+    const label = document.createElement('label');
+    label.setAttribute("for", name);
+    containerDiv.appendChild(label);
+    containerDiv.appendChild(newInput);
+    return containerDiv;
+  } else {
+    return newInput
+  }
+}
+
+export function storeInspectionIds(inspectionList: InspectionListItem[]) {
+  const inspectionIds: number[] = inspectionList.reduce((acc: number[], currentInspection: InspectionListItem) => {
+    acc.push(currentInspection['inspection_id']);
+    return acc;
+  }, []);
+  sessionStorage.setItem("inspectionIds", JSON.stringify(inspectionIds));
 }

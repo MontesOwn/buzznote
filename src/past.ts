@@ -1,7 +1,7 @@
 import { initializeApp } from "./main";
-import { getListOfInspections } from "./database/inspectionService";
+import { getListOfInspections } from "./services/inspectionService";
 import type { InspectionListItem } from "./models";
-import { createButton, createMessage, createListTable } from "./modules/utils";
+import { createButton, createMessage, createListTable, storeInspectionIds } from "./modules/utils";
 
 const mainElement = document.querySelector('main') as HTMLElement;
 const loading = document.getElementById('loading') as HTMLElement;
@@ -68,6 +68,7 @@ initializeApp("Past Inspections").then(async () => {
         const urlParams = new URLSearchParams(window.location.search);
         const year = urlParams.get('year');
         inspections = await getListOfInspections();
+        if (inspections) storeInspectionIds(inspections);
         getYears();
         if (year) {
             displayInspections(year);

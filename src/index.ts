@@ -1,4 +1,4 @@
-import { createButton, makeElement, createLink } from "./modules/utils";
+import { makeElement, createLink } from "./modules/utils";
 import { initializeApp } from "./main";
 import { getUserRole } from "./firebase/authService";
 import { auth } from "./firebase/firebase";

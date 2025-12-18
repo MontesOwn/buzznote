@@ -205,7 +205,7 @@ async function openModalForBox(hiveId: number, boxId: number | null) {
     return boxToSendBack;
 }
 
-async function openEditHiveModal(hiveData: Hive, hiveId: number) {
+async function openEditHiveModal(hiveData: Hive) {
     const manageHiveBackdrop = document.getElementById('manage-hive-backdrop') as HTMLElement;
     const manageHiveModal = document.getElementById('manage-box-modal') as HTMLFormElement;
     manageHiveModal.innerHTML = '';
@@ -255,7 +255,7 @@ initializeApp("Loading").then(async () => {
             const pageHeading = makeElement("H2", 'page-heading', null, `${hiveData['hive_name']} (${hiveData['active'] ? 'Active' : 'Not Active'})`);
             pageHeader.appendChild(pageHeading);
             const editHiveButton = createButton("Edit Hive", "button", "edit-hive", "button orange", "edit");
-            editHiveButton.addEventListener('click', () => openEditHiveModal(hiveData, parseInt(hiveId)));
+            editHiveButton.addEventListener('click', () => openEditHiveModal(hiveData));
             pageHeader.appendChild(editHiveButton);
             mainElement.appendChild(pageHeader);
             const boxesForHive = await getBoxesForHiveID(parseInt(hiveId), false);

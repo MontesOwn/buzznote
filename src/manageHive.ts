@@ -59,20 +59,20 @@ async function submitData(formData: FormData, hiveId: number, boxId: number | nu
             closeModal('manage-hive-backdrop');
             const newBoxRow = createRowForListTable(newBox, columnHeaders, newBox['box_id'].toString());
             const boxesTable = document.getElementById('boxes-table');
+            const hiveData: Hive = await getHiveForID(hiveId);
+            hiveData['num_boxes'] += 1;
+            await updateHive(hiveData);
             if (boxesTable) {
                 const tbody = boxesTable.querySelector('tbody') as HTMLElement;
                 tbody.appendChild(newBoxRow);
                 createMessage(response['message'], "main-message", "check_circle");
                 const editButton = newBoxRow.querySelector('button') as HTMLElement;
                 editButton.addEventListener('click', () => openModalForBox(hiveId, newBox['box_id']));
-                Call boxService function that updates numBoxes for this hiveId
-                Also it seems like manage hives isn't working on github. Check Vite params
             } else {
-                throw new Error("Could not reload boxes. Please try refreshing the page");
+                window.location.reload();
             }
         } else {
             const response = await updateBox(boxId, newBox);
-            console.log(response);
             closeModal('manage-hive-backdrop');
             if (response['box_id']) {
                 const boxesTable = document.getElementById('boxes-table');

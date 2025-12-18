@@ -36,9 +36,25 @@ export async function getBoxForBoxId(boxId: number) {
   }
 }
 
-// export async function addBox(box: Box) {
+export async function addBox(box: Box): Promise<{ message: string, box_id: string }> {
+  try {
+    const response = await fetch(baseURL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(box),
+    });
 
-// }
+    if (!response.ok) {
+      const errorMessage = await response.json();
+      throw new Error(`${errorMessage.status_code} - ${errorMessage.message}`);
+    }
+
+    const data = await response.json() as { message: string, box_id: string };
+    return data;
+  } catch (error: any) {
+    throw error;
+  }
+}
 
 export async function updateBox(boxId: number, box: Box) {
   try {

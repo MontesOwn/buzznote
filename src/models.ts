@@ -89,15 +89,15 @@ export class InspectionListItem {
 
 export class Average {
     public average_id: number;
-        public inspection_id: number;
-        public box_name: string;
-        public num_frames: number;
-        public honey: string;
-        public nectar: string;
-        public brood: string;
-        public queen_cells: string;
-        public drawn_comb: string;
-        public queen_spotted: string;
+    public inspection_id: number;
+    public box_name: string;
+    public num_frames: number;
+    public honey: string;
+    public nectar: string;
+    public brood: string;
+    public queen_cells: string;
+    public drawn_comb: string;
+    public queen_spotted: string;
     constructor(
         average_id: number,
         inspection_id: number,
@@ -109,7 +109,7 @@ export class Average {
         queen_cells: string,
         drawn_comb: string,
         queen_spotted: string,
-    ) { 
+    ) {
         this.average_id = average_id;
         this.inspection_id = inspection_id;
         this.box_name = box_name;
@@ -125,16 +125,16 @@ export class Average {
 
 export class AverageDetail {
     public average_id: number;
-        public inspection_id: number;
-        public box_name: string;
-        public num_frames: number;
-        public honey: string;
-        public nectar: string;
-        public brood: string;
-        public queen_cells: string;
-        public drawn_comb: string;
-        public queen_spotted: string;
-        public showFrames: boolean = false;
+    public inspection_id: number;
+    public box_name: string;
+    public num_frames: number;
+    public honey: string;
+    public nectar: string;
+    public brood: string;
+    public queen_cells: string;
+    public drawn_comb: string;
+    public queen_spotted: string;
+    public showFrames: boolean = false;
     constructor(
         average_id: number,
         inspection_id: number,
@@ -163,15 +163,15 @@ export class AverageDetail {
 
 export class Hive {
     public hive_id: number;
-        public hive_name: string;
-        public num_boxes: number;
-        public active: boolean;
+    public hive_name: string;
+    public num_boxes: number;
+    public active: boolean;
     constructor(
         hive_id: number,
         hive_name: string,
         num_boxes: number,
         active: boolean
-    ) { 
+    ) {
         this.hive_id = hive_id;
         this.hive_name = hive_name;
         this.num_boxes = num_boxes;
@@ -181,12 +181,12 @@ export class Hive {
 
 export class Box {
     public box_id: number;
-        public hive_id: number;
-        public box_name: string;
-        public num_frames: number;
-        public box_type: string;
-        public overwinter: boolean;
-        public active: boolean;
+    public hive_id: number;
+    public box_name: string;
+    public num_frames: number;
+    public box_type: string;
+    public overwinter: boolean;
+    public active: boolean;
     constructor(
         box_id: number,
         hive_id: number,
@@ -195,7 +195,7 @@ export class Box {
         box_type: string,
         overwinter: boolean,
         active: boolean
-    ) { 
+    ) {
         this.box_id = box_id;
         this.hive_id = hive_id;
         this.box_name = box_name;
@@ -212,7 +212,7 @@ export class TempAndCondition {
     constructor(
         temp: number,
         condition: string
-    ) { 
+    ) {
         this.temp = temp;
         this.condition = condition;
     }
@@ -220,15 +220,15 @@ export class TempAndCondition {
 
 export class Frame {
     public frame_id: number;
-        public box_id: number;
-        public inspection_id: number;
-        public box_name: string;
-        public frame_number: string;
-        public drawn_comb: boolean;
-        public honey: boolean;
-        public nectar: boolean;
-        public brood: boolean;
-        public queen_cells: boolean;
+    public box_id: number;
+    public inspection_id: number;
+    public box_name: string;
+    public frame_number: string;
+    public drawn_comb: boolean;
+    public honey: boolean;
+    public nectar: boolean;
+    public brood: boolean;
+    public queen_cells: boolean;
     constructor(
         frame_id: number,
         box_id: number,
@@ -240,7 +240,7 @@ export class Frame {
         nectar: boolean,
         brood: boolean,
         queen_cells: boolean
-    ) { 
+    ) {
         this.frame_id = frame_id;
         this.box_id = box_id;
         this.inspection_id = inspection_id;

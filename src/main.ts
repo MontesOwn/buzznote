@@ -1,4 +1,4 @@
-import { createMessage, makeElement } from "./modules/utils";
+import { closeModal, createMessage, makeElement } from "./modules/utils";
 import {
   signInWithGooglePopup,
   signOutUser,
@@ -84,4 +84,25 @@ export async function initializeApp(currentPage: string) {
   });
 
   headerTitle.addEventListener('click', () => window.location.href = '/');
+
+  //event listener for the user to press escape to close any modal that is open
+  document.addEventListener("keydown", (e) => {
+    let addHiveModalBackdrop = document.getElementById("add-hive-backdrop");
+    let manageHiveBackdrop = document.getElementById("manage-hive-backdrop");
+    if (e.key === "Escape") {
+      e.preventDefault();
+      if (
+        addHiveModalBackdrop &&
+        !addHiveModalBackdrop.classList.contains('hide')
+      ) {
+        closeModal("add-hive-backdrop");
+      } else if (manageHiveBackdrop &&
+        !manageHiveBackdrop.classList.contains('hide')
+      ) {
+        closeModal("manage-hive-backdrop");
+      } else {
+        console.warn("Esc key pressed, but no modals are open");
+      }
+    }
+  });
 }

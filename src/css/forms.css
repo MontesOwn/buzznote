@@ -11,10 +11,12 @@ textarea {
     justify-content: flex-start;
     align-items: center;
     gap: 10px;
+    margin: 10px 0;
 }
 
 input[type="date"],
 input[type="number"],
+input[type="text"],
 select {
     padding: 5px;
     border-radius: 5px;
@@ -25,4 +27,17 @@ select {
 
 input[type="number"] {
     width: 100px;
+}
+
+input:checked + label {
+  color: white;
+  opacity: 1;
+}
+
+.button-group-row input {
+  display: none;
+}
+
+input[type="checkbox"] {
+  opacity: 0;
 }

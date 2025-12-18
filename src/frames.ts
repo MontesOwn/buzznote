@@ -10,6 +10,7 @@ import {
 
 let boxes: Box[] | null = null;
 
+const mainElement = document.querySelector('main') as HTMLElement;
 const boxSelectionSection = document.getElementById('box-selection') as HTMLElement;
 const framesSection = document.getElementById('frames') as HTMLElement;
 const loading = document.getElementById('loading') as HTMLElement;
@@ -71,9 +72,10 @@ initializeApp("Frames").then(async () => {
     } else {
         throw new Error(`No hive ID found, please go back home and try again.`)
     }
-    loading.classList.add('hide');
+    
     } catch (error: any) {
-        loading.classList.add('hide');
         createMessage(error, 'main-message', 'error');
     }
-})
+    loading.classList.add('hide');
+    mainElement.classList.remove('hide');
+});

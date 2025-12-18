@@ -80,4 +80,5 @@ initializeApp("Past Inspections").then(async () => {
         loading.classList.add('hide');
         createMessage(error, 'main-message', 'error');
     }
+    mainElement.classList.remove('hide');
 });

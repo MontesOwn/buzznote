@@ -10,6 +10,7 @@ import type { Hive } from "./models";
 import { initializeApp } from "./main";
 import { getCurrentWeather } from "./services/weatherService";
 
+const mainElement = document.querySelector('main') as HTMLElement;
 const pageWrapper = document.getElementById('page-wrapper') as HTMLElement;
 const loading = document.getElementById('loading') as HTMLElement;
 
@@ -58,5 +59,5 @@ initializeApp("Select Hive").then(async () => {
         createMessage(error, 'main-message', 'error');
     }
     loading.classList.add('hide');
-
-})
+    mainElement.classList.remove('hide');
+});

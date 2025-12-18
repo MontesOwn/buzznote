@@ -10,11 +10,13 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),
-        hives: resolve(__dirname, "hives-selector.html"),
+        selectHive: resolve(__dirname, "selectHive.html"),
         frames: resolve(__dirname, "frames.html"),
         past: resolve(__dirname, "past/index.html"),
         inspectionDetail: resolve(__dirname, "past/inspectionDetail.html"),
-        search: resolve(__dirname, "search.html")
+        search: resolve(__dirname, "search.html"),
+        hives: resolve(__dirname, "hives/index.html"),
+        manageHive: resolve(__dirname, "hives/manage.html")
       },
     },
   },

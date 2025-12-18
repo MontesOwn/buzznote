@@ -267,6 +267,7 @@ initializeApp("Loading").then(async () => {
             }
             //Display notes
             displayNotes(inspeciton);
+            mainElement.classList.remove('hide');
             loading.classList.add('hide');
         } else {
             throw new Error("Could not load inspection details. Please return to the previous page and try again");

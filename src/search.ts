@@ -90,11 +90,11 @@ async function searchDateRange() {
         const formH3 = makeElement("h3", null, null, "Search dates between");
         setDateRangeForm.appendChild(formH3);
         const formRow = makeElement("section", null, "form-row", null);
-        const startDateInput = createInput("date", 'start-date-input', null);
+        const startDateInput = createInput("date", 'start-date-input', null, null);
         formRow.appendChild(startDateInput);
         const and = makeElement("p", null, null, "and");
         formRow.appendChild(and);
-        const endDateInput = createInput("date", 'end-date-input', null);
+        const endDateInput = createInput("date", 'end-date-input', null, null);
         formRow.appendChild(endDateInput);
         const submitButton = createButton("Search", "submit", "date-submit-button", "button green", "search");
         formRow.appendChild(submitButton);
@@ -129,11 +129,11 @@ async function searchTempRange() {
         const formH3 = makeElement("h3", null, null, "Search temperature between");
         setTempRangeForm.appendChild(formH3);
         const formRow = makeElement("section", null, "form-row", null);
-        const lowestTempInput = createInput("number", 'min-temp-input', null);
+        const lowestTempInput = createInput("number", 'min-temp-input', null, null);
         formRow.appendChild(lowestTempInput);
         const and = makeElement("p", null, null, "and");
         formRow.appendChild(and);
-        const highestTempInput = createInput("number", 'max-temp-input', null);
+        const highestTempInput = createInput("number", 'max-temp-input', null, null);
         formRow.appendChild(highestTempInput);
         const submitButton = createButton("Search", "submit", "temp-submit-button", "button green", "search");
         formRow.appendChild(submitButton);
@@ -275,4 +275,5 @@ initializeApp("Search").then(() => {
     optionsButtonGroup.appendChild(queenSpottedButton);
     mainElement.appendChild(optionsButtonGroup);
     loading.classList.add('hide');
+    mainElement.classList.remove('hide');
 });

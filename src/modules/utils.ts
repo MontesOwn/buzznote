@@ -1,4 +1,4 @@
-import { AverageDetail, Frame, Inspection, InspectionListItem } from "../models";
+import { AverageDetail, Box, Frame, Hive, Inspection, InspectionListItem } from "../models";
 
 export function createButton(
   buttonText: string,
@@ -92,53 +92,46 @@ export function makeElement(elementType: string, elementId: string | null, eleme
   return newElement;
 }
 
+export function createCheckbox(labelTextTrue: string, labelTextFalse: string, checkboxId: string, full: boolean) {
+  const checkBoxContainer = document.createElement("div");
+  checkBoxContainer.setAttribute('class', "button-group-row");
+  if (full) checkBoxContainer.classList.add("full");
+  const checkboxLabel = document.createElement("label");
+  checkboxLabel.setAttribute("for", checkboxId);
+  checkboxLabel.textContent = labelTextFalse;
+  checkboxLabel.setAttribute('class', 'button red');
+  if (full) checkboxLabel.classList.add("full");
+  checkBoxContainer.appendChild(checkboxLabel);
+  const checkboxInput = document.createElement('input') as HTMLInputElement;
+  checkboxInput.setAttribute('type', 'checkbox');
+  checkboxInput.setAttribute("id", checkboxId);
+  checkboxInput.setAttribute("name", checkboxId);
+  checkboxInput.addEventListener('change', (e) => {
+    const isChecked = (e.target as HTMLInputElement).checked;
+    if (isChecked) {
+      checkboxLabel.textContent = labelTextTrue;
+      checkboxLabel.classList.remove('red');
+      checkboxLabel.classList.add('green');
+    } else {
+      checkboxLabel.textContent = labelTextFalse;
+      checkboxLabel.classList.remove('green');
+      checkboxLabel.classList.add('red');
+    }
+  });
+  checkBoxContainer.appendChild(checkboxInput);
+  return checkBoxContainer;
+}
+
 export function createCheckboxRow(checkboxName: string) {
   const idName = checkboxName.toLowerCase().replace(" ", "-");
   const checkboxContainer = document.createElement('div');
   const divH3 = makeElement('h3', null, 'center', checkboxName);
   checkboxContainer.appendChild(divH3);
   const buttonRow = makeElement("div", `${checkboxName}-checkboxes`, 'button-group-row', null);
-  const checkLabelA = document.createElement('label');
-  checkLabelA.setAttribute('for', `${idName}-a`);
-  checkLabelA.setAttribute('class', 'button full red');
-  checkLabelA.textContent = "Side A";
-  buttonRow.appendChild(checkLabelA);
-  const checkboxA = document.createElement('input') as HTMLInputElement;
-  checkboxA.setAttribute('type', 'checkbox');
-  checkboxA.setAttribute('id', `${idName}-a`);
-  checkboxA.setAttribute('name', `${idName}-a`);
-  checkboxA.addEventListener('change', (e) => {
-    const isChecked = (e.target as HTMLInputElement).checked;
-    if (isChecked) {
-      checkLabelA.classList.remove('red');
-      checkLabelA.classList.add('green');
-    } else {
-      checkLabelA.classList.remove('green');
-      checkLabelA.classList.add('red');
-    }
-  });
-  buttonRow.appendChild(checkboxA);
-
-  const checkLabelB = document.createElement('label');
-  checkLabelB.setAttribute('for', `${idName}-b`);
-  checkLabelB.setAttribute('class', 'button full red');
-  checkLabelB.textContent = "Side B";
-  buttonRow.appendChild(checkLabelB);
-  const checkboxB = document.createElement('input') as HTMLInputElement;
-  checkboxB.setAttribute('type', 'checkbox');
-  checkboxB.setAttribute('id', `${idName}-b`);
-  checkboxB.setAttribute('name', `${idName}-b`);
-  checkboxB.addEventListener('change', (e) => {
-    const isChecked = (e.target as HTMLInputElement).checked;
-    if (isChecked) {
-      checkLabelB.classList.remove('red');
-      checkLabelB.classList.add('green');
-    } else {
-      checkLabelB.classList.remove('green');
-      checkLabelB.classList.add('red');
-    }
-  });
-  buttonRow.appendChild(checkboxB);
+  const sideACheckbox = createCheckbox("Side A", "Side A", `${idName}-a`, true);
+  buttonRow.appendChild(sideACheckbox);
+  const sideBCheckbox = createCheckbox("Side B", "Side B", `${idName}-b`, true);
+  buttonRow.appendChild(sideBCheckbox);
   checkboxContainer.appendChild(buttonRow);
   return checkboxContainer;
 }
@@ -179,6 +172,15 @@ export function createTableHead(columnHeaders: string[]) {
           if (word.length === 0) return '';
           return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
         })
+        .map(word => {
+          if (word === "Num") {
+            return "# of";
+          } else if (word === "Active") {
+            return "Status";
+          } else {
+            return word;
+          }
+        })
         .join(' ');
       const columnHeaderName = document.createTextNode(readableKey);
       newColumnHeader.appendChild(columnHeaderName);
@@ -188,7 +190,7 @@ export function createTableHead(columnHeaders: string[]) {
   return tableHead;
 }
 
-type TableItem = InspectionListItem | AverageDetail | Frame | {};
+type TableItem = InspectionListItem | AverageDetail | Frame | Hive | Box | {};
 
 export function createRowForListTable(item: TableItem, columnHeaders: string[], itemId: string) {
   const newRow = document.createElement('tr');
@@ -196,18 +198,28 @@ export function createRowForListTable(item: TableItem, columnHeaders: string[], 
   for (const key of columnHeaders) {
     const newCell = document.createElement("td");
     const itemValue = (item as any)[key];
-    const valueString = document.createTextNode(itemValue?.toString() || "");
-    newCell.appendChild(valueString);
+    let valueString: string = "";
+    if (key === 'active') {
+      valueString = itemValue === 1 ? 'Active' : 'Not Active';
+    } else if (key === 'overwinter') {
+      valueString = itemValue === 1 ? 'Overwintered' : 'Not Overwintered';
+    } else if (key === "edit") {
+      const editButton = createButton("", "button", itemId, "", "edit");
+      newCell.appendChild(editButton);
+    } else {
+      valueString = itemValue?.toString() || ""
+    }
+    if (key !== "edit") newCell.textContent = valueString;
     newRow.appendChild(newCell);
   }
   return newRow;
 }
 
-export function createListTable(itemsArray: InspectionListItem[] | AverageDetail[] | Frame[], columnHeaders: string[], primaryIdKeyName: string) {
+export function createListTable(itemsArray: InspectionListItem[] | AverageDetail[] | Frame[] | Hive[] | Box[], columnHeaders: string[], primaryIdKeyName: string) {
   const table = makeElement("table", null, null, null);
   const tableHead = createTableHead(columnHeaders);
   table.appendChild(tableHead);
-  const tableBody = itemsArray.reduce((acc: HTMLElement, currentItem: InspectionListItem | AverageDetail | Frame) => {
+  const tableBody = itemsArray.reduce((acc: HTMLElement, currentItem: TableItem) => {
     const itemId = (currentItem as any)[primaryIdKeyName]?.toString() || "";
     const newRow = createRowForListTable(currentItem, columnHeaders, itemId);
     acc.appendChild(newRow);
@@ -266,14 +278,15 @@ export function formatDateTime(date: Date): string {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-export function createInput(inputType: string, name: string, labelText: string | null) {
+export function createInput(inputType: string, name: string, labelText: string | null, dvivClass: string | null) {
   const newInput = makeElement("input", name, null, null);
   newInput.setAttribute("type", inputType);
   newInput.setAttribute("name", name);
   if (labelText) {
-    const containerDiv = makeElement("div", null, "input-and-label", null);
+    const containerDiv = makeElement("div", null, dvivClass, null);
     const label = document.createElement('label');
     label.setAttribute("for", name);
+    label.textContent = labelText;
     containerDiv.appendChild(label);
     containerDiv.appendChild(newInput);
     return containerDiv;
@@ -288,4 +301,77 @@ export function storeInspectionIds(inspectionList: InspectionListItem[]) {
     return acc;
   }, []);
   sessionStorage.setItem("inspectionIds", JSON.stringify(inspectionIds));
+}
+
+export function openModal(
+  modalBackdrop: HTMLElement,
+  modal: HTMLElement,
+  firstFocusElementId: string,
+) {
+  //Prevent the page from scrolling
+  const body = document.querySelector("body") as HTMLElement;
+  body.classList.add("noScroll");
+  //Display the modal by changing the display of the modal backdrop
+  modalBackdrop.classList.remove('hide');
+  //Change the modal's aria attribute
+  modal.setAttribute("aria-modal", "true");
+  //Trap keyboard focus on the first input or button
+  const firstFocusElement = document.getElementById(firstFocusElementId);
+  if (firstFocusElement) {
+    firstFocusElement.focus();
+  }
+  //Set up the keyboard trap for all focusable elements
+  trapFocus(modal, modalBackdrop);
+}
+
+export function closeModal(modalBackdropId: string) {
+  const modalBackdrop = document.getElementById(modalBackdropId) as HTMLElement;
+  const modal = modalBackdrop.getElementsByClassName("modal");
+  //Change the modal's aria attribute
+  if (modal) {
+    modal[0].setAttribute("aria-modal", "false");
+  }
+  //Hide the modal by changing the display of the backdrop
+  modalBackdrop.classList.add('hide');
+  //Remove the noScroll class to let the page scroll again
+  const body = document.querySelector("body") as HTMLElement;
+  body.classList.remove("noScroll");
+}
+
+export function trapFocus(modal: HTMLElement, backdrop: HTMLElement) {
+  const focusableElements = modal.querySelectorAll(
+    "button, [href], input, select, textarea, input:checked + label",
+  ) as NodeListOf<HTMLElement>;
+  //Don't trap focus if the modal/backdrop isn't open
+  if (backdrop.style.display === "none") {
+    return;
+  }
+  //Warn if no focusable elements in modal
+  if (!focusableElements.length) {
+    console.warn(
+      "trapFocus Function called on modal with no focusable elements",
+    );
+    return;
+  }
+  const firstFocusableElement: HTMLElement = focusableElements[0];
+  const lastFocusableElement: HTMLElement =
+    focusableElements[focusableElements.length - 1];
+  document.addEventListener("keydown", (e) => {
+    //Let user tab through only the elements in the modal
+    if (e.key === "Tab") {
+      if (e.shiftKey) {
+        //If at first element, loop back to last element
+        if (document.activeElement === firstFocusableElement) {
+          lastFocusableElement.focus();
+          e.preventDefault();
+        }
+      } else {
+        //If at last element, loop to first element
+        if (document.activeElement === lastFocusableElement) {
+          firstFocusableElement.focus();
+          e.preventDefault();
+        }
+      }
+    }
+  });
 }

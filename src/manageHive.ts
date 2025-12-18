@@ -100,13 +100,13 @@ async function submitData(formData: FormData, hiveId: number, boxId: number | nu
     }
 }
 
-async function updateTheHive(formData: FormData, hiveId: number) {
+async function updateTheHive(formData: FormData, hiveData: Hive) {
     try {
         let updatedHive: Hive = {
-            hive_id: hiveId,
-            hive_name: "",
-            num_boxes: 0,
-            active: false
+            hive_id: hiveData['hive_id'],
+            hive_name: hiveData['hive_name'],
+            num_boxes: hiveData['num_boxes'],
+            active: hiveData['active']
         }
         const newHiveName = formData.get('hive-name-input');
         if (newHiveName === null || newHiveName.toString().trim() === "") {
@@ -117,8 +117,11 @@ async function updateTheHive(formData: FormData, hiveId: number) {
         }
         const status = formData.get('status-checkbox') !== null;
         if (status) {
-            updatedHive['active'] = status;
+            updatedHive['active'] = true;
+        } else {
+            updatedHive['active'] = false;
         }
+        console.log(updatedHive['active']);
         await updateHive(updatedHive);
         createMessage("Hive updated successfully", "main-message", "check_circle");
         const pageHeading = document.getElementById('page-heading') as HTMLElement;
@@ -236,7 +239,7 @@ async function openEditHiveModal(hiveData: Hive, hiveId: number) {
     manageHiveModal.addEventListener('submit', (e) => {
         e.preventDefault();
         const formData: FormData = new FormData(manageHiveModal);
-        updateTheHive(formData, hiveId);
+        updateTheHive(formData, hiveData);
     });
     openModal(manageHiveBackdrop, manageHiveModal, 'box-name-input');
 }

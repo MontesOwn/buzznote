@@ -65,6 +65,8 @@ async function submitData(formData: FormData, hiveId: number, boxId: number | nu
                 createMessage(response['message'], "main-message", "check_circle");
                 const editButton = newBoxRow.querySelector('button') as HTMLElement;
                 editButton.addEventListener('click', () => openModalForBox(hiveId, newBox['box_id']));
+                Call boxService function that updates numBoxes for this hiveId
+                Also it seems like manage hives isn't working on github. Check Vite params
             } else {
                 throw new Error("Could not reload boxes. Please try refreshing the page");
             }

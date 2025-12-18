@@ -41,3 +41,7 @@ input:checked + label {
 input[type="checkbox"] {
   opacity: 0;
 }
+
+#textAreaInput {
+  width: 80vw;
+}

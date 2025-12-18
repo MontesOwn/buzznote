@@ -26,10 +26,14 @@
   <div id="page-wrapper">
     <div id="spacer"></div>
     <div id="loading">
-      <img src="../images/loading.gif"/>
+      <img src="../images/loading.gif" />
     </div>
     <section class="message-wrapper" id="main-message"></section>
     <main class="hide"></main>
+  </div>
+  <div class="backdrop hide" id="notes-backdrop">
+    <section class="message-wrapper" id="notes-message"></section>
+    <form role="dialog" id="notes-modal" aria-modal="false" aria-labelledby="dialog-label" class="modal"></form>
   </div>
   <script type="module" src="../src/inspectionDetail.ts"></script>
 </body>

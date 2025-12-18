@@ -206,6 +206,8 @@ export function createRowForListTable(item: TableItem, columnHeaders: string[], 
     } else if (key === "edit") {
       const editButton = createButton("", "button", itemId, "", "edit");
       newCell.appendChild(editButton);
+    } else if (key === "inspection_date") {
+      valueString = formatDate(itemValue);
     } else {
       valueString = itemValue?.toString() || ""
     }
@@ -276,6 +278,22 @@ export function formatDateTime(date: Date): string {
   const minutes = ('0' + date.getMinutes()).slice(-2);
   const seconds = ('0' + date.getSeconds()).slice(-2);
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+export function formatDate(dateString: string) {
+  const dateTimeArray = dateString.split(" ");
+  if (dateTimeArray.length > 1) {
+    const date = dateTimeArray[0];
+    const time = dateTimeArray[1];
+    //Format Date
+    const dateParts = date.split("-");
+    let formatted = dateParts[1] + "/" + dateParts[2] + "/" + dateParts[0];
+    return formatted + " " + time;
+  } else {
+    const dateParts = dateString.split("-");
+    return dateParts[1] + "/" + dateParts[2] + "/" + dateParts[0];
+  }
+
 }
 
 export function createInput(inputType: string, name: string, labelText: string | null, dvivClass: string | null) {

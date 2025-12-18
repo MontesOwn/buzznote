@@ -1,7 +1,12 @@
 import { initializeApp } from "./main";
 import { getListOfInspections } from "./services/inspectionService";
 import type { InspectionListItem } from "./models";
-import { createButton, createMessage, createListTable, storeInspectionIds } from "./modules/utils";
+import {
+    createButton,
+    createMessage,
+    createListTable,
+    storeInspectionIds
+} from "./modules/utils";
 
 const mainElement = document.querySelector('main') as HTMLElement;
 const loading = document.getElementById('loading') as HTMLElement;
@@ -14,7 +19,7 @@ function getYear(date: string): string {
 
 function getYears() {
     if (inspections) {
-        const years: string[] =  inspections.reduce((acc: string[], currentInspection: InspectionListItem) => {
+        const years: string[] = inspections.reduce((acc: string[], currentInspection: InspectionListItem) => {
             const yearForCurrentInspection = getYear(currentInspection['inspection_date']);
             if (!acc.includes(yearForCurrentInspection)) {
                 acc.push(yearForCurrentInspection);

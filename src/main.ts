@@ -89,6 +89,7 @@ export async function initializeApp(currentPage: string) {
   document.addEventListener("keydown", (e) => {
     let addHiveModalBackdrop = document.getElementById("add-hive-backdrop");
     let manageHiveBackdrop = document.getElementById("manage-hive-backdrop");
+    let notesModalBackdrop = document.getElementById("notes-backdrop");
     if (e.key === "Escape") {
       e.preventDefault();
       if (
@@ -100,6 +101,8 @@ export async function initializeApp(currentPage: string) {
         !manageHiveBackdrop.classList.contains('hide')
       ) {
         closeModal("manage-hive-backdrop");
+      } else if (notesModalBackdrop && !notesModalBackdrop.classList.contains('hide')) {
+        closeModal("notes-backdrop");
       } else {
         console.warn("Esc key pressed, but no modals are open");
       }

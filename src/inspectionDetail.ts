@@ -1,5 +1,15 @@
 import { initializeApp } from "./main";
-import { createMessage, createItemTable, makeElement, createButton, formatDateTime, createListTable, createLink } from "./modules/utils";
+import { 
+    createMessage, 
+    createItemTable, 
+    makeElement, 
+    createButton, 
+    formatDateTime, 
+    formatDate,
+    createListTable, 
+    createLink, 
+    closeModal, 
+    openModal } from "./modules/utils";
 import { getInspectionForId, updateInspection } from "./services/inspectionService";
 import { Frame, Inspection } from "./models";
 import { getAverageForId } from "./services/averageService";
@@ -38,15 +48,19 @@ async function submitData(formData: FormData, inspeciton: Inspection) {
         inspeciton['last_updated'] = formatedDateTime;
         const response = await updateInspection(inspeciton);
         displayNotes(response);
+        createMessage("Updated notes successfully.", "main-message", "check_circle");
     } catch (error: any) {
         createMessage(error, 'edit-message', 'error');
     }
+    closeModal('notes-backdrop');
 }
 
 function displayNotes(inspeciton: Inspection) {
     let inspecitonHasNotes: boolean = false;
     const editNotesForm = document.getElementById('edit-notes-form');
     if (editNotesForm) editNotesForm.remove();
+    const previousNotes = document.getElementById('notes-display');
+    if (previousNotes) previousNotes.remove();
     const notesDiv = makeElement("div", 'notes-display', null, null);
     if (!inspeciton['notes'] || inspeciton['notes'].toString().trim() === "") {
         const notesHeading = makeElement("h2", null, null, "No Notes");
@@ -56,14 +70,14 @@ function displayNotes(inspeciton: Inspection) {
         const notesHeading = makeElement("h2", null, null, "Notes");
         notesDiv.appendChild(notesHeading);
         const notesP = document.createElement('p');
-        notesP.textContent = inspeciton['notes'];
+        notesP.innerHTML = inspeciton['notes'].replace(/\n/g, "<br/>");
         notesDiv.appendChild(notesP);
     }
     if (inspeciton['last_updated']) {
         const lastUpdatedP = document.createElement('p');
         const updatedKey = makeElement('b', null, null, "Last Updated: ");
         lastUpdatedP.appendChild(updatedKey);
-        const updatedValue = makeElement('span', null, null, inspeciton['last_updated'].toString());
+        const updatedValue = makeElement('span', null, null, formatDate(inspeciton['last_updated'].toString()));
         lastUpdatedP.appendChild(updatedValue);
         notesDiv.appendChild(lastUpdatedP);
     }
@@ -88,36 +102,34 @@ function displayNotes(inspeciton: Inspection) {
 }
 
 function displayEditNotesForm(inspeciton: Inspection, inspecitonHasNotes: boolean) {
-    const notesDiv = document.getElementById('notes-display');
-    if (notesDiv) notesDiv.remove();
-    const editNotesForm = makeElement("form", 'edit-notes-form', null, null) as HTMLFormElement;
-    const formMessage = makeElement("section", "edit-message", "message-wrapper", null);
-    editNotesForm.appendChild(formMessage);
+    const notesBackdrop = document.getElementById('notes-backdrop') as HTMLElement;
+    const notesModal = document.getElementById('notes-modal') as HTMLFormElement;
+    notesModal.innerHTML = '';
+    let formHeading = makeElement("h2", null, null, null);
     if (inspecitonHasNotes) {
-        const formHeading = makeElement("h2", null, null, "Edit Notes:");
-        editNotesForm.appendChild(formHeading);
+        formHeading.textContent = "Edit Notes:"
     } else {
-        const formHeading = makeElement("h2", null, null, "Add Notes:");
-        editNotesForm.appendChild(formHeading);
+        formHeading.textContent = "Add Notes:"
     }
+    notesModal.appendChild(formHeading);
     const textAreaInput: HTMLTextAreaElement = document.createElement('textarea');
     textAreaInput.id = 'textAreaInput';
     textAreaInput.name = 'textAreaInput';
     textAreaInput.value = inspeciton['notes'];
-    editNotesForm.appendChild(textAreaInput);
-    const cancelButton = createButton("Cancel", 'button', 'cancel', 'button red');
-    cancelButton.addEventListener('click', () => {
-        displayNotes(inspeciton);
-    });
-    editNotesForm.appendChild(cancelButton);
-    const submitButton = createButton("Submit", 'submit', 'submit', 'button green');
-    editNotesForm.appendChild(submitButton);
-    editNotesForm.addEventListener('submit', async (e) => {
+    notesModal.appendChild(textAreaInput);
+    const actionButtonRow = makeElement("section", null, "button-group-row", null);
+    const closeButton = createButton("Close", "button", "close-button", "button red");
+    closeButton.addEventListener('click', () => closeModal('notes-backdrop'));
+    actionButtonRow.appendChild(closeButton);
+    const submitButton = createButton("Submit", "submit", "submit-button", "button green");
+    actionButtonRow.appendChild(submitButton);
+    notesModal.appendChild(actionButtonRow);
+    notesModal.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const formData: FormData = new FormData(editNotesForm);
+        const formData: FormData = new FormData(notesModal);
         await submitData(formData, inspeciton);
-    })
-    mainElement.appendChild(editNotesForm);
+    });
+    openModal(notesBackdrop, notesModal, "textAreaInput");
 }
 
 function getVisualClassesForFrameType(frame: Frame): string {
@@ -165,11 +177,11 @@ initializeApp("Loading").then(async () => {
         if (idString) {
             const inspectionId = parseInt(idString);
             const inspeciton = await getInspectionForId(inspectionId);
-            document.title = `${inspeciton['inspection_date']} - Buzznote`;
+            document.title = `${formatDate(inspeciton['inspection_date'])} - Buzznote`;
             //Create the inspectino header including previous and next buttons
             const inspecitonIdArrayString = sessionStorage.getItem("inspectionIds");
             const inspecitonHeader = makeElement("section", "inspection-header", null, null);
-            const inspectionHeading = makeElement("h2", null, null, `${inspeciton['hive_name']} | ${inspeciton['inspection_date']} | ${inspeciton['start_time']}`);
+            const inspectionHeading = makeElement("h2", null, null, `${inspeciton['hive_name']} | ${formatDate(inspeciton['inspection_date'])} | ${inspeciton['start_time']}`);
             inspecitonHeader.appendChild(inspectionHeading);
             if (inspecitonIdArrayString) {
                 const inspecitonIdArray: number[] = JSON.parse(inspecitonIdArrayString);

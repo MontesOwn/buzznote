@@ -57,7 +57,7 @@ async function showAddHivesModal() {
     const checkboxRow = makeElement("section", null, "form-row", null);
     const statusP = makeElement("p", null, null, "status:");
     checkboxRow.appendChild(statusP);
-    const statusCheckbox = createCheckbox("Active", "Not Active", "status-checkbox", false);
+    const statusCheckbox = createCheckbox("Active", "Not Active", "status-checkbox", false, false);
     checkboxRow.appendChild(statusCheckbox);
     addHiveModal.appendChild(checkboxRow);
     const actionButtonRow = makeElement("section", null, "button-group-row", null);

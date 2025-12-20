@@ -122,6 +122,12 @@ hr {
 }
 
 /* messages */
+
+#main-message {
+  position: fixed;
+  top: 70px;
+  z-index: 5;
+}
 .message-wrapper {
   height: 50px;
 }

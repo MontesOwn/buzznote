@@ -58,7 +58,7 @@ function displayInspections(year: string) {
     mainElement.innerHTML = '';
     loadYearSelector(year);
     const inspectionsToShow = filterInspectionsForYear(year);
-    const columnHeaders: string[] = ['hive_name', 'inspection_date', 'start_time', 'num_boxes', 'total_frames'];
+    const columnHeaders: string[] = ['hive_name', 'inspection_date', 'start_time', 'num_boxes', 'total_frames', 'has_notes'];
     if (inspectionsToShow) {
         const inspectionsTable = createListTable(inspectionsToShow, columnHeaders, "inspection_id");
         inspectionsTable.classList.add('table-clickable');

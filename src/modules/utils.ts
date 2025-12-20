@@ -225,6 +225,14 @@ export function createRowForListTable(item: TableItem, columnHeaders: string[], 
       newCell.appendChild(editButton);
     } else if (key === "inspection_date") {
       valueString = formatDate(itemValue);
+    } else if (key === "has_notes") {
+      if (itemValue === 1) {
+        valueString = "check"
+        newCell.classList.add('material-symbols-outlined')
+        newCell.style.width = "100%";
+      } else {
+        console.log("WTF")
+      }
     } else {
       valueString = itemValue?.toString() || ""
     }
@@ -332,9 +340,9 @@ export function createInput(inputType: string, name: string, labelText: string |
 
 export function createRadioGroup(heading: string, options: string[], buttonColors: string[]) {
   const containerID = heading
-          .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-          .replace(/[\s_]+/g, '-')
-          .toLowerCase();
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/[\s_]+/g, '-')
+    .toLowerCase();
   const containerDivId = containerID + "-div";
   const radioContainer = makeElement("div", containerDivId, null, null);
   const headingH2 = makeElement("h2", null, null, heading);

@@ -23,17 +23,6 @@ header h1 {
   margin: 0 10px;
 }
 
-/* #page-wrapper {
-  display: grid;
-  grid-template-columns: 1fr;
-  grid-template-rows: 70px 40px auto;
-  grid-template-areas:
-    "spacer"
-    "message-area"
-    "main";
-  height: 100vh;
-} */
-
 #page-wrapper {
   display: flex;
   flex-direction: column;

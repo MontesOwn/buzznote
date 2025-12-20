@@ -69,6 +69,7 @@ export class InspectionListItem {
     public start_time: string;
     public num_boxes: number;
     public total_frames: number;
+    public has_notes: boolean;
 
     constructor(
         inspection_id: number,
@@ -76,7 +77,8 @@ export class InspectionListItem {
         inspection_date: string,
         start_time: string,
         num_boxes: number,
-        total_frames: number
+        total_frames: number,
+        has_notes: boolean
     ) {
         this.inspection_id = inspection_id;
         this.hive_name = hive_name;
@@ -84,6 +86,7 @@ export class InspectionListItem {
         this.start_time = start_time;
         this.num_boxes = num_boxes;
         this.total_frames = total_frames;
+        this.has_notes = has_notes;
     }
 }
 

@@ -154,9 +154,9 @@ async function openModalForBox(hiveId: number, boxId: number | null) {
     const checkboxRow = makeElement("section", null, "form-row", null);
     const statusP = makeElement("p", null, null, "status:");
     checkboxRow.appendChild(statusP);
-    const statusCheckbox = createCheckbox("Active", "Not Active", "status-checkbox", false);
+    const statusCheckbox = createCheckbox("Active", "Not Active", "status-checkbox", false, false);
     checkboxRow.appendChild(statusCheckbox);
-    const overwinteredCheckbox = createCheckbox("Overwintered", "Not Overwintered", "overwintered-checkbox", false);
+    const overwinteredCheckbox = createCheckbox("Overwintered", "Not Overwintered", "overwintered-checkbox", false, false);
     checkboxRow.appendChild(overwinteredCheckbox);
     manageHiveModal.appendChild(checkboxRow);
     //Set values if editing
@@ -205,7 +205,8 @@ async function openModalForBox(hiveId: number, boxId: number | null) {
     return boxToSendBack;
 }
 
-async function openEditHiveModal(hiveData: Hive) {
+async function openEditHiveModal(hiveId :number) {
+    const hiveData = await getHiveForID(hiveId);
     const manageHiveBackdrop = document.getElementById('manage-hive-backdrop') as HTMLElement;
     const manageHiveModal = document.getElementById('manage-box-modal') as HTMLFormElement;
     manageHiveModal.innerHTML = '';
@@ -218,15 +219,16 @@ async function openEditHiveModal(hiveData: Hive) {
     const checkboxRow = makeElement("section", null, "form-row", null);
     const statusP = makeElement("p", null, null, "status:");
     checkboxRow.appendChild(statusP);
-    const statusCheckbox = createCheckbox("Active", "Not Active", "status-checkbox", false);
+    
+    const statusCheckbox = createCheckbox("Active", "Not Active", "status-checkbox", false, hiveData['active']);
     const checkbox = statusCheckbox.querySelector('input') as HTMLInputElement;
     const label = statusCheckbox.querySelector('label') as HTMLElement;
     if (hiveData['active']) {
         label.textContent = "Active";
         label.classList.remove('red');
         label.classList.add('green');
+        checkbox.checked = true;
     }
-    checkbox.checked = hiveData['active'];
     checkboxRow.appendChild(statusCheckbox);
     manageHiveModal.appendChild(checkboxRow);
     const actionButtonRow = makeElement("section", null, "button-group-row", null);
@@ -255,7 +257,7 @@ initializeApp("Loading").then(async () => {
             const pageHeading = makeElement("H2", 'page-heading', null, `${hiveData['hive_name']} (${hiveData['active'] ? 'Active' : 'Not Active'})`);
             pageHeader.appendChild(pageHeading);
             const editHiveButton = createButton("Edit Hive", "button", "edit-hive", "button orange", "edit");
-            editHiveButton.addEventListener('click', () => openEditHiveModal(hiveData));
+            editHiveButton.addEventListener('click', () => openEditHiveModal(hiveData['hive_id']));
             pageHeader.appendChild(editHiveButton);
             mainElement.appendChild(pageHeader);
             const boxesForHive = await getBoxesForHiveID(parseInt(hiveId), false);

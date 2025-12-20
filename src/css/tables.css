@@ -1,5 +1,6 @@
 .table-container {
-  overflow-y: auto;
+  width: 100%;
+  overflow-x: auto !important;
 }
 
 table {
@@ -7,6 +8,7 @@ table {
   border: 1px solid var(--nav-background);
   margin: 10px 0;
   width: 100%;
+  min-width: 500px;
 }
 
 thead {

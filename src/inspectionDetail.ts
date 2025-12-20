@@ -214,7 +214,7 @@ initializeApp("Loading").then(async () => {
                 'brood'
             ]
             const overviewTable = createItemTable(inspeciton, inspectionColumnHeaders, 'inspection_id');
-            mainElement.appendChild(overviewTable);
+            // mainElement.appendChild(overviewTable);
             const averages = await getAverageForId(inspeciton['inspection_id']);
             if (averages) {
                 //Display averages (accordian with all frames)
@@ -224,7 +224,7 @@ initializeApp("Loading").then(async () => {
                 const averagesColumnHeaders = ['box_name', 'num_frames', 'honey', 'nectar', 'brood', 'queen_cells', 'drawn_comb', 'queen_spotted', 'expand'];
                 for (const currentAverage of averages) {
                     const newAverageTable = createItemTable(currentAverage, averagesColumnHeaders, 'average_id');
-                    mainElement.appendChild(newAverageTable);
+                    // mainElement.appendChild(newAverageTable);
 
                     const frames: Frame[] = await getFramesForInspectionIDAndBoxName(
                         inspeciton['inspection_id'],
@@ -234,7 +234,7 @@ initializeApp("Loading").then(async () => {
                     const framesColumnHeaders: string[] = ['frame_number', 'honey', 'nectar', 'brood', 'queen_cells', 'drawn_comb']
                     const framesTable = createListTable(frames, framesColumnHeaders, 'frame_id');
                     framesTable.classList.add('hide');
-                    mainElement.appendChild(framesTable);
+                    // mainElement.appendChild(framesTable);
                     const expandButton = newAverageTable.querySelector('button') as HTMLElement;
                     expandButton.addEventListener('click', () => {
                         // Toggle all frames table using the 'frames' array
@@ -248,16 +248,16 @@ initializeApp("Loading").then(async () => {
                         }
                     });
 
-                    const boxContainer = makeElement("div", null, "box-container", null);
-                    frames.forEach(frame => {
-                        const classesForFrame: string = `frame-container ${getVisualClassesForFrameType(frame)}`;
-                        const frameContainer = makeElement("div", null, classesForFrame, null);
-                        const containerText = `${frame['frame_number']} ${currentAverage['queen_spotted'] === frame['frame_number'] ? 'Queen Spotted ' : ''} ${frame.queen_cells ? 'Queen Cells' : ''}`;
-                        const containerP = makeElement("p", null, "frame-text", containerText);
-                        frameContainer.appendChild(containerP);
-                        boxContainer.appendChild(frameContainer);
-                    });
-                    mainElement.appendChild(boxContainer);
+                    // const boxContainer = makeElement("div", null, "box-container", null);
+                    // frames.forEach(frame => {
+                    //     const classesForFrame: string = `frame-container ${getVisualClassesForFrameType(frame)}`;
+                    //     const frameContainer = makeElement("div", null, classesForFrame, null);
+                    //     const containerText = `${frame['frame_number']} ${currentAverage['queen_spotted'] === frame['frame_number'] ? 'Queen Spotted ' : ''} ${frame.queen_cells ? 'Queen Cells' : ''}`;
+                    //     const containerP = makeElement("p", null, "frame-text", containerText);
+                    //     frameContainer.appendChild(containerP);
+                    //     boxContainer.appendChild(frameContainer);
+                    // });
+                    // mainElement.appendChild(boxContainer);
                 }
                 const visualFieldset = makeElement("fieldset", "visual-legend", null, null);
                 const legendTitle = makeElement("legend", null, null, "Legend");

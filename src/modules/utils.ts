@@ -243,6 +243,7 @@ export function createRowForListTable(item: TableItem, columnHeaders: string[], 
 }
 
 export function createListTable(itemsArray: InspectionListItem[] | AverageDetail[] | Average[] | Frame[] | Hive[] | Box[], columnHeaders: string[], primaryIdKeyName: string) {
+  const tableContainer = makeElement("div", null, "table-container", null);
   const table = makeElement("table", null, null, null);
   const tableHead = createTableHead(columnHeaders);
   table.appendChild(tableHead);
@@ -253,10 +254,12 @@ export function createListTable(itemsArray: InspectionListItem[] | AverageDetail
     return acc;
   }, document.createElement('tbody'));
   table.appendChild(tableBody);
-  return table;
+  tableContainer.appendChild(table);
+  return tableContainer;
 }
 
 export function createItemTable(item: Inspection | AverageDetail, columnHeaders: string[], primaryIdKeyName: string) {
+  const tableContainer = makeElement("div", null, "table-container", null);
   const table = makeElement("table", null, null, null);
   const tableHead = createTableHead(columnHeaders);
   table.appendChild(tableHead);
@@ -292,7 +295,8 @@ export function createItemTable(item: Inspection | AverageDetail, columnHeaders:
   }, document.createElement('tr'));
   tableBody.appendChild(newRow);
   table.appendChild(tableBody);
-  return table;
+  tableContainer.appendChild(table)
+  return tableContainer;
 }
 
 export function formatDateTime(date: Date): string {

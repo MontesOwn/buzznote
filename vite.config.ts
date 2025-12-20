@@ -16,7 +16,8 @@ export default defineConfig({
         inspectionDetail: resolve(__dirname, "past/inspectionDetail.html"),
         search: resolve(__dirname, "search.html"),
         hives: resolve(__dirname, "hives/index.html"),
-        manageHive: resolve(__dirname, "hives/manage.html")
+        manageHive: resolve(__dirname, "hives/manage.html"),
+        endOfInspection: resolve(__dirname, "end.html")
       },
     },
   },

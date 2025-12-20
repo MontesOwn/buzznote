@@ -18,7 +18,7 @@ export async function getFramesForInspectionIDAndBoxName(inspectionID: number, b
     }
 }
 
-export async function addNewFrame(frame: Frame) {
+export async function addNewFrame(frame: Frame): Promise<{message: string, frame_id: string}> {
     try {
         const response = await fetch(baseURL, {
             method: 'POST',
@@ -31,7 +31,7 @@ export async function addNewFrame(frame: Frame) {
             throw new Error(`${errorMessage.status_code} - ${errorMessage.message}`);
         }
 
-        const data = await response.json() as Frame;
+        const data = await response.json() as {message: string, frame_id: string};
         return data;
     } catch (error: any) {
         throw error;

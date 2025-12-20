@@ -21,7 +21,7 @@ export async function getAverageForId(inspectionId: number): Promise<AverageDeta
     }
 }
 
-export async function addAverage(newAverage: Average) {
+export async function addAverage(newAverage: Average): Promise<{message: string, average_id: string}> {
     try {
             const response = await fetch(baseURL, {
                 method: 'POST',
@@ -34,7 +34,7 @@ export async function addAverage(newAverage: Average) {
                 throw new Error(`${errorMessage.status_code} - ${errorMessage.message}`);
             }
     
-            const data = await response.json() as Average;
+            const data = await response.json() as {message: string, average_id: string};
             return data;
         } catch (error: any) {
             throw error;

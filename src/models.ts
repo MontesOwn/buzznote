@@ -255,26 +255,35 @@ export class Frame {
 }
 
 export class FrameFormGroup {
+    public box_id: number;
+    public frame_number: number;
     public honey: FramePair;
     public nectar: FramePair;
     public brood: FramePair;
-    public queenSpotted: FramePair;
+    public queen_spotted: FramePair;
     public queen_cells: FramePair;
     public drawn_comb: FramePair;
+    public recorded: boolean = false;
     constructor(
+        box_id: number,
+        frame_number: number,
         honey: FramePair,
         nectar: FramePair,
         brood: FramePair,
-        queenSpotted: FramePair,
+        queen_spotted: FramePair,
         queen_cells: FramePair,
-        drawn_comb: FramePair
+        drawn_comb: FramePair,
+        recorded: boolean
     ) {
+        this.box_id = box_id;
+        this.frame_number = frame_number;
         this.honey = honey;
         this.nectar = nectar;
         this.brood = brood;
-        this.queenSpotted = queenSpotted;
+        this.queen_spotted = queen_spotted;
         this.queen_cells = queen_cells;
         this.drawn_comb = drawn_comb;
+        this.recorded = recorded;
     }
 }
 
@@ -287,5 +296,26 @@ export class FramePair {
     ) {
         this.sideA = sideA;
         this.sideB = sideB;
+    }
+}
+
+export interface RadioGroupConfig {
+    label: string;
+    options: string[];
+    colors: string[];
+}
+
+export class Message {
+    public message: string;
+    public messageContainer: string
+    public icon: string;
+    constructor(
+        message: string,
+        messageContainer: string,
+        icon: string
+    ) {
+        this.message = message;
+        this.messageContainer = messageContainer;
+        this.icon = icon;
     }
 }

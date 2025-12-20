@@ -10,8 +10,8 @@ async function updateUIbasedOnAuth(userRole: string | null) {
     const mainElement = document.createElement('main');
     const buttonGroup = makeElement('section', 'options', 'button-group-column', null);
     if (userRole === "admin") {
-        // const startNewInspection = createLink("Start New Inspection", "/hives-selector", false, 'large full button green', null)
-        const startNewInspection = createLink("Start New Inspection (Coming Soon)", "#", false, 'large full button grey', null);
+        const startNewInspection = createLink("Start New Inspection", "/selectHive", false, 'large full button green', null)
+        //const startNewInspection = createLink("Start New Inspection (Coming Soon)", "#", false, 'large full button grey', null);
         buttonGroup.appendChild(startNewInspection);
         const manageHives = createLink("Manage Hives", '/hives/', false, 'large full button purple', null);
         buttonGroup.appendChild(manageHives);

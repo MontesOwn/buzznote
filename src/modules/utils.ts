@@ -1,4 +1,4 @@
-import { AverageDetail, Box, Frame, Hive, Inspection, InspectionListItem } from "../models";
+import { Average, AverageDetail, Box, Frame, FramePair, Hive, Inspection, InspectionListItem, Message } from "../models";
 
 export function createButton(
   buttonText: string,
@@ -82,6 +82,16 @@ export function clearMessages() {
   }
 }
 
+export function storeMessage(
+  message: string,
+  messageContainer: string,
+  icon: string,
+) {
+  clearMessages();
+  const messageToStore = new Message(message, messageContainer, icon);
+  sessionStorage.setItem("message", JSON.stringify(messageToStore));
+}
+
 export function makeElement(elementType: string, elementId: string | null, elementClass: string | null, elementText: string | null) {
   const newElement = document.createElement(elementType);
   if (elementId) newElement.setAttribute('id', elementId);
@@ -92,20 +102,27 @@ export function makeElement(elementType: string, elementId: string | null, eleme
   return newElement;
 }
 
-export function createCheckbox(labelTextTrue: string, labelTextFalse: string, checkboxId: string, full: boolean) {
+export function createCheckbox(labelTextTrue: string, labelTextFalse: string, checkboxId: string, checked: boolean, full: boolean) {
   const checkBoxContainer = document.createElement("div");
   checkBoxContainer.setAttribute('class', "button-group-row");
   if (full) checkBoxContainer.classList.add("full");
   const checkboxLabel = document.createElement("label");
   checkboxLabel.setAttribute("for", checkboxId);
-  checkboxLabel.textContent = labelTextFalse;
-  checkboxLabel.setAttribute('class', 'button red');
+  if (checked) {
+    checkboxLabel.textContent = labelTextTrue;
+    checkboxLabel.setAttribute('class', 'button green');
+  } else {
+    checkboxLabel.textContent = labelTextFalse;
+    checkboxLabel.setAttribute('class', 'button red');
+  }
+
   if (full) checkboxLabel.classList.add("full");
   checkBoxContainer.appendChild(checkboxLabel);
   const checkboxInput = document.createElement('input') as HTMLInputElement;
   checkboxInput.setAttribute('type', 'checkbox');
   checkboxInput.setAttribute("id", checkboxId);
   checkboxInput.setAttribute("name", checkboxId);
+  checkboxInput.checked = checked;
   checkboxInput.addEventListener('change', (e) => {
     const isChecked = (e.target as HTMLInputElement).checked;
     if (isChecked) {
@@ -122,15 +139,15 @@ export function createCheckbox(labelTextTrue: string, labelTextFalse: string, ch
   return checkBoxContainer;
 }
 
-export function createCheckboxRow(checkboxName: string) {
-  const idName = checkboxName.toLowerCase().replace(" ", "-");
+export function createCheckboxRow(checkboxName: string, framePair: FramePair) {
+  const idName = checkboxName.toLowerCase().replace(" ", "_");
   const checkboxContainer = document.createElement('div');
   const divH3 = makeElement('h3', null, 'center', checkboxName);
   checkboxContainer.appendChild(divH3);
   const buttonRow = makeElement("div", `${checkboxName}-checkboxes`, 'button-group-row', null);
-  const sideACheckbox = createCheckbox("Side A", "Side A", `${idName}-a`, true);
+  const sideACheckbox = createCheckbox("Side A", "Side A", `${idName}-a`, framePair['sideA'], true);
   buttonRow.appendChild(sideACheckbox);
-  const sideBCheckbox = createCheckbox("Side B", "Side B", `${idName}-b`, true);
+  const sideBCheckbox = createCheckbox("Side B", "Side B", `${idName}-b`, framePair['sideB'], true);
   buttonRow.appendChild(sideBCheckbox);
   checkboxContainer.appendChild(buttonRow);
   return checkboxContainer;
@@ -190,7 +207,7 @@ export function createTableHead(columnHeaders: string[]) {
   return tableHead;
 }
 
-type TableItem = InspectionListItem | AverageDetail | Frame | Hive | Box | {};
+type TableItem = InspectionListItem | AverageDetail | Frame | Hive | Box | Average | {};
 
 export function createRowForListTable(item: TableItem, columnHeaders: string[], itemId: string) {
   const newRow = document.createElement('tr');
@@ -217,7 +234,7 @@ export function createRowForListTable(item: TableItem, columnHeaders: string[], 
   return newRow;
 }
 
-export function createListTable(itemsArray: InspectionListItem[] | AverageDetail[] | Frame[] | Hive[] | Box[], columnHeaders: string[], primaryIdKeyName: string) {
+export function createListTable(itemsArray: InspectionListItem[] | AverageDetail[] | Average[] | Frame[] | Hive[] | Box[], columnHeaders: string[], primaryIdKeyName: string) {
   const table = makeElement("table", null, null, null);
   const tableHead = createTableHead(columnHeaders);
   table.appendChild(tableHead);
@@ -312,6 +329,42 @@ export function createInput(inputType: string, name: string, labelText: string |
     return newInput
   }
 }
+
+export function createRadioGroup(heading: string, options: string[], buttonColors: string[]) {
+  const containerID = heading
+          .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+          .replace(/[\s_]+/g, '-')
+          .toLowerCase();
+  const containerDivId = containerID + "-div";
+  const radioContainer = makeElement("div", containerDivId, null, null);
+  const headingH2 = makeElement("h2", null, null, heading);
+  headingH2.setAttribute('class', 'center');
+  radioContainer.appendChild(headingH2);
+  const randioGroup = options.reduce((acc: HTMLElement, currentOption: string, index) => {
+    const newInput = document.createElement("input");
+    newInput.setAttribute('type', 'radio');
+    newInput.setAttribute('id', `${currentOption}-${containerID}`);
+    newInput.setAttribute('name', containerID);
+    newInput.setAttribute('value', currentOption);
+    const newLabel = document.createElement('label');
+    newLabel.setAttribute('for', `${currentOption}-${containerID}`);
+    newLabel.setAttribute('class', `button full half ${buttonColors[index]}`);
+    newLabel.textContent = currentOption;
+    acc.appendChild(newInput);
+    acc.appendChild(newLabel)
+    return acc;
+  }, document.createElement("div"));
+  randioGroup.setAttribute('class', "button-group-row");
+  radioContainer.appendChild(randioGroup);
+  return radioContainer;
+
+}
+
+// const readableKey = currentColumnHeader.split('_')
+//         .map(word => {
+//           if (word.length === 0) return '';
+//           return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+//         })
 
 export function storeInspectionIds(inspectionList: InspectionListItem[]) {
   const inspectionIds: number[] = inspectionList.reduce((acc: number[], currentInspection: InspectionListItem) => {

@@ -34,7 +34,7 @@ export async function getInspectionForId(inspectionId: number): Promise<Inspecti
     }
 }
 
-export async function createInspection(inspection: Inspection) {
+export async function createInspection(inspection: Inspection): Promise<{message: string, inspection_id: string}> {
     try {
         const response = await fetch(baseURL, {
             method: 'POST',
@@ -47,7 +47,7 @@ export async function createInspection(inspection: Inspection) {
             throw new Error(`${errorMessage.status_code} - ${errorMessage.message}`);
         }
 
-        const data = await response.json() as Inspection;
+        const data = await response.json() as {message: string, inspection_id: string};
         return data;
     } catch (error: any) {
         throw error;

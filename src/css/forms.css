@@ -30,7 +30,6 @@ input[type="number"] {
 }
 
 input:checked + label {
-  color: white;
   opacity: 1;
 }
 
@@ -44,4 +43,8 @@ input[type="checkbox"] {
 
 #textAreaInput {
   width: 80vw;
+}
+
+input[type="radio"]:checked + label {
+  opacity: 1;
 }

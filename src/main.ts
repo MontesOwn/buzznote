@@ -4,6 +4,7 @@ import {
   signOutUser,
 } from "./firebase/authService";
 import { auth } from "./firebase/firebase";
+import type { Message } from "./models";
 
 const signInButton = document.getElementById('sign-in') as HTMLElement;
 const signOutButton = document.getElementById('sign-out') as HTMLElement;
@@ -49,7 +50,12 @@ export async function initializeApp(currentPage: string) {
     }
   });
   setUpAuthListener();
-
+  const storedMessageString = sessionStorage.getItem("message");
+  if (storedMessageString) {
+    const storedMessage: Message = JSON.parse(storedMessageString);
+    createMessage(storedMessage['message'], storedMessage['messageContainer'], storedMessage['icon']);
+    sessionStorage.removeItem("message");
+  }
   signInButton.addEventListener("click", async (e) => {
     e.preventDefault();
     createMessage("Opening Google window...", "main-message", "info");

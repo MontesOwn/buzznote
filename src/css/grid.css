@@ -53,6 +53,7 @@ main {
   grid-template-columns: 1fr 1fr;
   align-items: center;
   width: 100%;
+  gap: 5px;
 }
 
 #previous-button {

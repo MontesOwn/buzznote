@@ -74,7 +74,7 @@ async function searchHives() {
             acc.appendChild(hiveButton);
             return acc;
         }, document.createElement("section"));
-        buttonGroup.setAttribute('class', 'button-group-row');
+        buttonGroup.setAttribute('class', 'search-button-group');
         loadingText.remove();
         chooseHiveH3.classList.remove('hide');
         hiveSelectionSection.appendChild(buttonGroup);
@@ -89,7 +89,7 @@ async function searchDateRange() {
         const setDateRangeForm = makeElement("form", "set-date-range-form", null, null) as HTMLFormElement;
         const formH3 = makeElement("h3", null, null, "Search dates between");
         setDateRangeForm.appendChild(formH3);
-        const formRow = makeElement("section", null, "form-row", null);
+        const formRow = makeElement("section", null, "search-button-group", null);
         const startDateInput = createInput("date", 'start-date-input', null, null);
         formRow.appendChild(startDateInput);
         const and = makeElement("p", null, null, "and");
@@ -128,7 +128,7 @@ async function searchTempRange() {
         const setTempRangeForm = makeElement("form", "set-temp-range-form", null, null) as HTMLFormElement;
         const formH3 = makeElement("h3", null, null, "Search temperature between");
         setTempRangeForm.appendChild(formH3);
-        const formRow = makeElement("section", null, "form-row", null);
+        const formRow = makeElement("section", null, "search-button-group", null);
         const lowestTempInput = createInput("number", 'min-temp-input', null, null);
         formRow.appendChild(lowestTempInput);
         const and = makeElement("p", null, null, "and");
@@ -227,7 +227,7 @@ initializeApp("Search").then(() => {
     const ChooseHeading = makeElement("h2", null, null, "Choose a search option");
     mainElement.appendChild(ChooseHeading);
     //Search options
-    const optionsButtonGroup = makeElement("section", "search-option-buttons", "button-group-row", null);
+    const optionsButtonGroup = makeElement("section", "search-option-buttons", "search-button-group", null);
     //Hive
     const hivesButton = createButton("Hive", 'button', 'hive-button', 'button white');
     hivesButton.addEventListener('click', async () => {

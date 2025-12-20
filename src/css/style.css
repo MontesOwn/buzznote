@@ -54,8 +54,6 @@ h4 {
 }
 
 header {
-  display: flex;
-  align-items: center;
   padding: 10px 15px;
   background-color: var(--header-background);
   position: fixed;
@@ -400,12 +398,13 @@ th {
   display: flex;
   justify-content: flex-start;
   width: 100%;
+  box-sizing: border-box;
   max-width: 1200px;
   border: 2px solid #333;
   padding: 5px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow-x: auto;
-  white-space: nowrap;
+  /* white-space: nowrap; */
 }
 
 .frame-container {
@@ -419,6 +418,7 @@ th {
   font-size: 1.2em;
   font-weight: bold;
   margin: 2px;
+  flex-shrink: 0;
 }
 
 .frame-text {
@@ -490,7 +490,7 @@ th {
   }
 }
 
-@media (min-width: 900px) {
+/* @media (min-width: 900px) {
   main {
     width: 100%;
     max-width: 900px;
@@ -502,6 +502,15 @@ th {
   main {
     margin: 20px;
   }
+} */
+main {
+  background-color: var(--main-background);
+  border-radius: 10px;
+  padding: 20px;
+  box-sizing: border-box; /* CRITICAL: Includes padding in the width calculation */
+  width: auto; /* Let margins define the width on mobile */
+  max-width: 100%; /* Prevent it from ever being wider than the viewport */
+  overflow-x: hidden;
 }
 
 /*Desktop*/

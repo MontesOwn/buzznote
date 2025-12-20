@@ -48,3 +48,19 @@ input[type="checkbox"] {
 input[type="radio"]:checked + label {
   opacity: 1;
 }
+
+.search-button-group {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+@media (max-width: 500px) {
+  .search-button-group {
+    flex-direction: column;
+  }
+
+  .search-button-group button {
+    width: 100%;
+  }
+}

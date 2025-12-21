@@ -38,7 +38,7 @@ function setUpAuthListener() {
 
 export async function initializeApp(currentPage: string) {
   if (currentPage !== "") {
-    //Set the page title
+    // Set the page title
     document.title = `${currentPage} - Buzznote`;
   }
   //Wait for the DOM to load

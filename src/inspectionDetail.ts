@@ -233,10 +233,12 @@ initializeApp("Loading").then(async () => {
 
                     const framesColumnHeaders: string[] = ['frame_number', 'honey', 'nectar', 'brood', 'queen_cells', 'drawn_comb']
                     const framesTable = createListTable(frames, framesColumnHeaders, 'frame_id');
+                    mainElement.appendChild(framesTable);
                     framesTable.classList.add('hide');
                     // mainElement.appendChild(framesTable);
                     const expandButton = newAverageTable.querySelector('button') as HTMLElement;
                     expandButton.addEventListener('click', () => {
+                        console.log(`Expand button for ${currentAverage['box_name']} clicked - ${currentAverage['showFrames']}`)
                         // Toggle all frames table using the 'frames' array
                         framesTable.classList.toggle('hide');
                         if (currentAverage['showFrames'] === true) {

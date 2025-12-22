@@ -1,6 +1,6 @@
 import { getBoxesForHiveID } from "./services/boxService";
 import { initializeApp } from "./main";
-import { Average, Frame, FrameFormGroup, FramePair, type Box } from "./models";
+import { Average, Frame, FrameFormGroup, FramePair, type Box, type BoxGroup } from "./models";
 import {
     createButton,
     makeElement,
@@ -9,6 +9,7 @@ import {
 } from "./modules/utils";
 
 let boxes: Box[] | null = null;
+let boxGroups: BoxGroup[] = [];
 
 const mainElement = document.querySelector('main') as HTMLElement;
 const boxSelectionSection = document.getElementById('box-selection') as HTMLElement;
@@ -16,8 +17,6 @@ const framesSection = document.getElementById('frames') as HTMLElement;
 const loading = document.getElementById('loading') as HTMLElement;
 const finishSection = document.getElementById('finish-section') as HTMLElement;
 const finishButton = document.getElementById('finish-button') as HTMLElement;
-
-let boxesWithFrames: FrameFormGroup[][] = [];
 
 function createFramesArray(numFrames: number, boxId: number) {
     let framesForBox: FrameFormGroup[] = [];
@@ -41,13 +40,15 @@ function createFramesArray(numFrames: number, boxId: number) {
 function showBoxSelection() {
     if (boxes) {
         boxSelectionSection.innerHTML = '';
-        const buttonGroup = boxes.reduce((acc: HTMLElement, currentBox: Box) => {
+        const buttonGroup = boxes.reduce((acc: HTMLElement, currentBox: Box, index) => {
             const newButton = createButton(currentBox['box_name'], 'button', currentBox['box_id'].toString(), 'button white large full');
             newButton.addEventListener('click', () => {
                 boxSelectionSection.classList.add('hide');
                 finishSection.classList.add('hide');
-                const frames = createFramesArray(currentBox['num_frames'], currentBox['box_id']);
-                showFramesSection(frames, currentBox['box_name']);
+                const selectedBoxGroup = boxGroups.find(boxGroup => boxGroup['boxInfo']['box_id'] === currentBox['box_id']);
+                if (selectedBoxGroup) {
+                    showFramesSection(selectedBoxGroup, index);
+                }
             })
             acc.appendChild(newButton);
             return acc;
@@ -133,18 +134,18 @@ function convertFormDataToFrame(boxID: number, frameNumber: number, formData: Fo
         drawn_comb: drawnComb,
         recorded: true
     }
-    // let newFrame = new FrameFormGroup(boxID, frameNumber, honey, nectar, brood, queenSpotted, queenCells, drawnComb, true);
     return newFrame;
 }
 
-function showFramesSection(frames: FrameFormGroup[], boxName: string) {
+function showFramesSection(boxGroup: BoxGroup, index: number) {
     framesSection.classList.remove('hide');
     let currentIndex = 0;
+    const frames = boxGroup['frames'];
     const numFrames = frames.length;
     const render = () => {
         framesSection.innerHTML = '';
         const currentFrame = frames[currentIndex];
-        const form = loadFrameForm(boxName, currentFrame, currentIndex, numFrames);
+        const form = loadFrameForm(boxGroup['boxInfo']['box_name'], currentFrame, currentIndex, numFrames);
         framesSection.appendChild(form);
         const prevBtn = form.querySelector('#previous-button');
         const nextBtn = form.querySelector('#next-button');
@@ -167,17 +168,17 @@ function showFramesSection(frames: FrameFormGroup[], boxName: string) {
         }
         if (nextBoxButton) {
             nextBoxButton.addEventListener('click', () => {
-                console.log("Next box button clicked");
                 saveCurrentData(form);
                 const currentBoxButton = document.getElementById(currentFrame['box_id'].toString());
                 if (currentBoxButton) {
-                    boxesWithFrames.push(frames)
+                    boxGroup['frames'] = frames;
+                    boxGroup['recorded'] = true;
+                    boxGroups[index] = boxGroup;
                     currentBoxButton.classList.remove('white');
                     currentBoxButton.classList.add('green');
                     framesSection.classList.add('hide');
                     boxSelectionSection.classList.remove('hide');
                     finishSection.classList.remove('hide');
-                    checkIfAllBoxesRecorded();
                 }
             });
         }
@@ -199,12 +200,10 @@ function showFramesSection(frames: FrameFormGroup[], boxName: string) {
 function finishInspection() {
     let recordedFrames: Frame[] = [];
     let averages: Average[] = [];
-    boxesWithFrames.forEach(box => {
-        if (boxes) {
-            const boxObject: Box | undefined = boxes.find(currBox => currBox['box_id'] === box[0]['box_id']);
-            if (boxObject) {
-                const recordedFramePairs = box.filter(currBox => currBox['recorded']);
-                let honeyTotal: number = 0;
+    boxGroups.forEach(boxGroup => {
+        if (boxGroup['recorded']) {
+            const recordedFramePairs = boxGroup['frames'].filter(frame => frame['recorded'] === true);
+            let honeyTotal: number = 0;
                 let nectarTotal: number = 0;
                 let broodTotal: number = 0;
                 let drawnCombTotal: number = 0;
@@ -227,9 +226,9 @@ function finishInspection() {
                         if (frameGroup['queen_spotted']['sideB']) queenSpotted = `${frameGroup['frame_number']}B`;
                         const newFrameSideA = new Frame(
                             0,
-                            boxObject['box_id'],
+                            boxGroup['boxInfo']['box_id'],
                             0,
-                            boxObject['box_name'],
+                            boxGroup['boxInfo']['box_name'],
                             `${frameGroup['frame_number']}A`,
                             frameGroup['drawn_comb']['sideA'],
                             frameGroup['honey']['sideA'],
@@ -240,9 +239,9 @@ function finishInspection() {
                         recordedFrames.push(newFrameSideA);
                         const newFrameSideB = new Frame(
                             0,
-                            boxObject['box_id'],
+                            boxGroup['boxInfo']['box_id'],
                             0,
-                            boxObject['box_name'],
+                            boxGroup['boxInfo']['box_name'],
                             `${frameGroup['frame_number']}B`,
                             frameGroup['drawn_comb']['sideB'],
                             frameGroup['honey']['sideB'],
@@ -256,34 +255,25 @@ function finishInspection() {
                 const numFramesRecoreded = recordedFramePairs.length;
                 if (numFramesRecoreded > 0) {
                     let boxAverage: Average = new Average(
-                    0,
-                    0,
-                    boxObject['box_name'],
-                    recordedFramePairs.length,
-                    `${Math.trunc((honeyTotal / numFramesRecoreded) * 100)}%`,
-                    `${Math.trunc((nectarTotal / numFramesRecoreded) * 100)}%`,
-                    `${Math.trunc((broodTotal / numFramesRecoreded) * 100)}%`,
-                    `${Math.trunc((queenCellsTotal / numFramesRecoreded) * 100)}%`,
-                    `${Math.trunc((drawnCombTotal / numFramesRecoreded) * 100)}%`,
-                    queenSpotted
-                );
-                averages.push(boxAverage);
+                        0,
+                        0,
+                        boxGroup['boxInfo']['box_name'],
+                        recordedFramePairs.length,
+                        `${Math.trunc((honeyTotal / numFramesRecoreded) * 100)}%`,
+                        `${Math.trunc((nectarTotal / numFramesRecoreded) * 100)}%`,
+                        `${Math.trunc((broodTotal / numFramesRecoreded) * 100)}%`,
+                        `${Math.trunc((queenCellsTotal / numFramesRecoreded) * 100)}%`,
+                        `${Math.trunc((drawnCombTotal / numFramesRecoreded) * 100)}%`,
+                        queenSpotted
+                    );
+                    averages.push(boxAverage);
                 }
-            }
+
         }
     });
     sessionStorage.setItem("frames", JSON.stringify(recordedFrames));
     sessionStorage.setItem("averages", JSON.stringify(averages));
     window.location.href = "/end";
-}
-
-function checkIfAllBoxesRecorded() {
-    if (boxesWithFrames.length === boxes?.length) {
-        finishButton.classList.remove('white');
-        finishButton.classList.add('green');
-        finishButton.classList.add('full');
-        finishButton.classList.add('large');
-    }
 }
 
 initializeApp("Frames").then(async () => {
@@ -292,6 +282,15 @@ initializeApp("Frames").then(async () => {
         if (hiveIdSessionStorage) {
             const hiveId = JSON.parse(hiveIdSessionStorage);
             boxes = await getBoxesForHiveID(hiveId, true);
+            boxes.forEach(box => {
+                const framesGroup = createFramesArray(box['num_frames'], box['box_id']);
+                const newBoxGroup: BoxGroup = {
+                    boxInfo: box,
+                    frames: framesGroup,
+                    recorded: false
+                }
+                boxGroups.push(newBoxGroup);
+            });
             showBoxSelection();
             finishButton.addEventListener('click', () => {
                 finishInspection();

@@ -322,3 +322,9 @@ export class Message {
         this.icon = icon;
     }
 }
+
+export interface BoxGroup {
+    boxInfo: Box;
+    frames: FrameFormGroup[];
+    recorded: boolean;
+}

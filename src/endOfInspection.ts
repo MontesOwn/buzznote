@@ -197,7 +197,7 @@ initializeApp("End of Inspection").then(() => {
                 ""
             );
             averages.forEach((average: Average) => {
-                if (average['queen_spotted']) {
+                if (average['queen_spotted'] !== "Not Spotted") {
                     newInspection['queen_spotted'] = true;
                 }
             });

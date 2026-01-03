@@ -18,6 +18,36 @@ const loading = document.getElementById('loading') as HTMLElement;
 const finishSection = document.getElementById('finish-section') as HTMLElement;
 const finishButton = document.getElementById('finish-button') as HTMLElement;
 
+initializeApp("Frames").then(async () => {
+    try {
+        const hiveIdSessionStorage = sessionStorage.getItem('hiveId');
+        if (hiveIdSessionStorage) {
+            const hiveId = JSON.parse(hiveIdSessionStorage);
+            boxes = await getBoxesForHiveID(hiveId, true);
+            boxes.forEach(box => {
+                const framesGroup = createFramesArray(box['num_frames'], box['box_id']);
+                const newBoxGroup: BoxGroup = {
+                    boxInfo: box,
+                    frames: framesGroup,
+                    recorded: false
+                }
+                boxGroups.push(newBoxGroup);
+            });
+            showBoxSelection();
+            finishButton.addEventListener('click', () => {
+                finishInspection();
+            });
+        } else {
+            throw new Error(`No hive ID found, please go back home and try again.`)
+        }
+
+    } catch (error: any) {
+        createMessage(error, 'main-message', 'error');
+    }
+    loading.classList.add('hide');
+    mainElement.classList.remove('hide');
+});
+
 function createFramesArray(numFrames: number, boxId: number) {
     let framesForBox: FrameFormGroup[] = [];
     for (let i = 0; i < numFrames; i++) {
@@ -57,84 +87,6 @@ function showBoxSelection() {
         boxSelectionSection.appendChild(buttonGroup);
         boxSelectionSection.classList.remove('hide');
     }
-}
-
-function loadFrameForm(boxName: string, currentFrame: FrameFormGroup, index: number, numFrames: number) {
-    const frameForm = makeElement('form', 'frame-form', null, null) as HTMLFormElement;
-    const sectionHeader = makeElement('h2', null, null, `Box: ${boxName} | Frame: ${currentFrame['frame_number']}`);
-    frameForm.appendChild(sectionHeader);
-    const honeyDiv = createCheckboxRow("Honey", currentFrame['honey']);
-    frameForm.appendChild(honeyDiv);
-    const nectarDiv = createCheckboxRow("Nectar", currentFrame['nectar']);
-    frameForm.appendChild(nectarDiv);
-    const broodDiv = createCheckboxRow("Brood", currentFrame['brood']);
-    frameForm.appendChild(broodDiv);
-    const queenCells = createCheckboxRow("Queen Cells", currentFrame['queen_cells']);
-    frameForm.appendChild(queenCells);
-    const drawnComb = createCheckboxRow("Drawn Comb", currentFrame['drawn_comb']);
-    frameForm.appendChild(drawnComb);
-    const queenSpotted = createCheckboxRow("Queen Spotted", currentFrame['queen_spotted']);
-    frameForm.appendChild(queenSpotted);
-    framesSection.appendChild(frameForm);
-    const actionRow = makeElement("section", "form-actions", "button-group-row", null);
-    if (index > 0) {
-        const previousButton = createButton("Previous Frame", "button", "previous-button", "button blue");
-        actionRow.appendChild(previousButton);
-    }
-    if (index < numFrames - 1) {
-        const nextButton = createButton("Next Frame", "button", "next-button", "button blue");
-        actionRow.appendChild(nextButton);
-    }
-    const nextBox = createButton("Next Box", "button", "next-box-button", "button orange");
-    actionRow.appendChild(nextBox);
-    frameForm.appendChild(actionRow);
-    return frameForm;
-
-}
-
-function convertFormDataToFrame(boxID: number, frameNumber: number, formData: FormData) {
-    let honey: FramePair = new FramePair(false, false);
-    const honeyA = formData.get('honey-a');
-    if (honeyA) honey['sideA'] = true;
-    const honeyB = formData.get('honey-b');
-    if (honeyB) honey['sideB'] = true;
-    let nectar: FramePair = new FramePair(false, false);
-    const nectarA = formData.get('nectar-a');
-    if (nectarA) nectar['sideA'] = true;
-    const nectarB = formData.get('nectar-b');
-    if (nectarB) nectar['sideB'] = true;
-    let brood: FramePair = new FramePair(false, false);
-    const broodA = formData.get("brood-a");
-    if (broodA) brood['sideA'] = true;
-    const broodB = formData.get('brood-b');
-    if (broodB) brood['sideB'] = true;
-    let queenSpotted: FramePair = new FramePair(false, false);
-    const queenSpottedA = formData.get('queen_spotted-a');
-    if (queenSpottedA) queenSpotted['sideA'] = true;
-    const queenSpottedB = formData.get('queen_spotted-b');
-    if (queenSpottedB) queenSpotted['sideB'] = true;
-    let queenCells: FramePair = new FramePair(false, false);
-    const queenCellsA = formData.get('queen_cells-a');
-    if (queenCellsA) queenCells['sideA'] = true;
-    const queenCellsB = formData.get('queen_cells-b');
-    if (queenCellsB) queenCells['sideB'] = true;
-    let drawnComb: FramePair = new FramePair(false, false);
-    const drawnCombA = formData.get('drawn_comb-a');
-    if (drawnCombA) drawnComb['sideA'] = true;
-    const drawnCombB = formData.get('drawn_comb-b');
-    if (drawnCombB) drawnComb['sideB'] = true;
-    let newFrame = {
-        box_id: boxID,
-        frame_number: frameNumber,
-        honey: honey,
-        nectar: nectar,
-        brood: brood,
-        queen_cells: queenCells,
-        queen_spotted: queenSpotted,
-        drawn_comb: drawnComb,
-        recorded: true
-    }
-    return newFrame;
 }
 
 function showFramesSection(boxGroup: BoxGroup, index: number) {
@@ -195,6 +147,83 @@ function showFramesSection(boxGroup: BoxGroup, index: number) {
     };
 
     render();
+}
+
+function loadFrameForm(boxName: string, currentFrame: FrameFormGroup, index: number, numFrames: number) {
+    const frameForm = makeElement('form', 'frame-form', null, null) as HTMLFormElement;
+    const sectionHeader = makeElement('h2', null, null, `Box: ${boxName} | Frame: ${currentFrame['frame_number']}`);
+    frameForm.appendChild(sectionHeader);
+    const honeyDiv = createCheckboxRow("Honey", currentFrame['honey']);
+    frameForm.appendChild(honeyDiv);
+    const nectarDiv = createCheckboxRow("Nectar", currentFrame['nectar']);
+    frameForm.appendChild(nectarDiv);
+    const broodDiv = createCheckboxRow("Brood", currentFrame['brood']);
+    frameForm.appendChild(broodDiv);
+    const queenCells = createCheckboxRow("Queen Cells", currentFrame['queen_cells']);
+    frameForm.appendChild(queenCells);
+    const drawnComb = createCheckboxRow("Drawn Comb", currentFrame['drawn_comb']);
+    frameForm.appendChild(drawnComb);
+    const queenSpotted = createCheckboxRow("Queen Spotted", currentFrame['queen_spotted']);
+    frameForm.appendChild(queenSpotted);
+    framesSection.appendChild(frameForm);
+    const actionRow = makeElement("section", "form-actions", "button-group-row", null);
+    if (index > 0) {
+        const previousButton = createButton("Previous Frame", "button", "previous-button", "button blue");
+        actionRow.appendChild(previousButton);
+    }
+    if (index < numFrames - 1) {
+        const nextButton = createButton("Next Frame", "button", "next-button", "button blue");
+        actionRow.appendChild(nextButton);
+    }
+    const nextBox = createButton("Next Box", "button", "next-box-button", "button orange");
+    actionRow.appendChild(nextBox);
+    frameForm.appendChild(actionRow);
+    return frameForm;
+}
+
+function convertFormDataToFrame(boxID: number, frameNumber: number, formData: FormData) {
+    let honey: FramePair = new FramePair(false, false);
+    const honeyA = formData.get('honey-a');
+    if (honeyA) honey['sideA'] = true;
+    const honeyB = formData.get('honey-b');
+    if (honeyB) honey['sideB'] = true;
+    let nectar: FramePair = new FramePair(false, false);
+    const nectarA = formData.get('nectar-a');
+    if (nectarA) nectar['sideA'] = true;
+    const nectarB = formData.get('nectar-b');
+    if (nectarB) nectar['sideB'] = true;
+    let brood: FramePair = new FramePair(false, false);
+    const broodA = formData.get("brood-a");
+    if (broodA) brood['sideA'] = true;
+    const broodB = formData.get('brood-b');
+    if (broodB) brood['sideB'] = true;
+    let queenSpotted: FramePair = new FramePair(false, false);
+    const queenSpottedA = formData.get('queen_spotted-a');
+    if (queenSpottedA) queenSpotted['sideA'] = true;
+    const queenSpottedB = formData.get('queen_spotted-b');
+    if (queenSpottedB) queenSpotted['sideB'] = true;
+    let queenCells: FramePair = new FramePair(false, false);
+    const queenCellsA = formData.get('queen_cells-a');
+    if (queenCellsA) queenCells['sideA'] = true;
+    const queenCellsB = formData.get('queen_cells-b');
+    if (queenCellsB) queenCells['sideB'] = true;
+    let drawnComb: FramePair = new FramePair(false, false);
+    const drawnCombA = formData.get('drawn_comb-a');
+    if (drawnCombA) drawnComb['sideA'] = true;
+    const drawnCombB = formData.get('drawn_comb-b');
+    if (drawnCombB) drawnComb['sideB'] = true;
+    let newFrame = {
+        box_id: boxID,
+        frame_number: frameNumber,
+        honey: honey,
+        nectar: nectar,
+        brood: brood,
+        queen_cells: queenCells,
+        queen_spotted: queenSpotted,
+        drawn_comb: drawnComb,
+        recorded: true
+    }
+    return newFrame;
 }
 
 function finishInspection() {
@@ -276,32 +305,3 @@ function finishInspection() {
     window.location.href = "/end";
 }
 
-initializeApp("Frames").then(async () => {
-    try {
-        const hiveIdSessionStorage = sessionStorage.getItem('hiveId');
-        if (hiveIdSessionStorage) {
-            const hiveId = JSON.parse(hiveIdSessionStorage);
-            boxes = await getBoxesForHiveID(hiveId, true);
-            boxes.forEach(box => {
-                const framesGroup = createFramesArray(box['num_frames'], box['box_id']);
-                const newBoxGroup: BoxGroup = {
-                    boxInfo: box,
-                    frames: framesGroup,
-                    recorded: false
-                }
-                boxGroups.push(newBoxGroup);
-            });
-            showBoxSelection();
-            finishButton.addEventListener('click', () => {
-                finishInspection();
-            });
-        } else {
-            throw new Error(`No hive ID found, please go back home and try again.`)
-        }
-
-    } catch (error: any) {
-        createMessage(error, 'main-message', 'error');
-    }
-    loading.classList.add('hide');
-    mainElement.classList.remove('hide');
-});

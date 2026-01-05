@@ -4,9 +4,50 @@ import { addNewHive, getAllHives } from "./services/hiveService";
 import { Hive } from "./models";
 import { auth } from "./firebase/firebase";
 import { getUserRole } from "./firebase/authService";
+import { navigateTo } from "./modules/navigate";
 
 const loading = document.getElementById("loading") as HTMLHtmlElement;
 const mainElement = document.querySelector('main') as HTMLElement;
+const backButton = document.getElementById("back-button") as HTMLElement;
+
+initializeApp("Manage Hives").then(async () => {
+    try {
+        backButton.addEventListener('click', () => navigateTo('/'));
+        const hives: Hive[] = await getAllHives(false);
+        const pageHeading = makeElement("h2", null, null, "Selecte a hive to manage:");
+        mainElement.appendChild(pageHeading);
+        const columnHeaders = ['hive_name', 'num_boxes', 'active'];
+        const hivesTable = createListTable(hives, columnHeaders, 'hive_id');
+        hivesTable.setAttribute('id', 'hives-table');
+        auth.onAuthStateChanged(async (user) => {
+            if (user) {
+                const userRole = await getUserRole(user.uid);
+                if (userRole === "admin") {
+                    hivesTable.classList.add('table-clickable');
+                    const rows = hivesTable.querySelectorAll('tr');
+                    rows.forEach(row => {
+                        row.addEventListener('click', () => {
+                            window.location.href = `/hives/manage?hiveId=${row.id}`;
+                        });
+                    });
+                    mainElement.appendChild(hivesTable);
+                    const openAddModal = createButton("Add Hive", "button", "open-add-modal", "button blue", "add");
+                    openAddModal.addEventListener('click', () => {
+                        showAddHivesModal();
+                    });
+                    mainElement.appendChild(openAddModal);
+                } else {
+                    hivesTable.classList.remove('table-clickable');
+                    mainElement.appendChild(hivesTable);
+                }
+            }
+            loading.remove();
+            mainElement.classList.remove('hide');
+        });
+    } catch (error: any) {
+        createMessage(error, 'main-message', 'error');
+    }
+});
 
 async function addHive(formData: FormData) {
     try {
@@ -36,7 +77,7 @@ async function addHive(formData: FormData) {
             const tbody = hivesTable.querySelector('tbody') as HTMLElement;
             tbody.appendChild(newHiveRow);
             createMessage(response['message'], "main-message", "check_circle");
-            newHiveRow.addEventListener('click', () => window.location.href = `/hives/manage?hiveId=${newHiveRow.id}`);
+            newHiveRow.addEventListener('click', () => navigateTo("/hives/manage", {params: {hiveId: newHiveRow.id}}));
         } else {
             throw new Error("Could not reload hives. Please try refreshing the page");
         }
@@ -74,41 +115,3 @@ async function showAddHivesModal() {
     });
     openModal(addHiveModalBackdrop, addHiveModal, 'hive-name-input');
 }
-
-initializeApp("Manage Hives").then(async () => {
-    try {
-        const hives: Hive[] = await getAllHives(false);
-        const pageHeading = makeElement("h2", null, null, "Selecte a hive to manage:");
-        mainElement.appendChild(pageHeading);
-        const columnHeaders = ['hive_name', 'num_boxes', 'active'];
-        const hivesTable = createListTable(hives, columnHeaders, 'hive_id');
-        hivesTable.setAttribute('id', 'hives-table');
-        auth.onAuthStateChanged(async (user) => {
-            if (user) {
-                const userRole = await getUserRole(user.uid);
-                if (userRole === "admin") {
-                    hivesTable.classList.add('table-clickable');
-                    const rows = hivesTable.querySelectorAll('tr');
-                    rows.forEach(row => {
-                        row.addEventListener('click', () => {
-                            window.location.href = `/hives/manage?hiveId=${row.id}`;
-                        });
-                    });
-                    mainElement.appendChild(hivesTable);
-                    const openAddModal = createButton("Add Hive", "button", "open-add-modal", "button blue", "add");
-                    openAddModal.addEventListener('click', () => {
-                        showAddHivesModal();
-                    });
-                    mainElement.appendChild(openAddModal);
-                } else {
-                    hivesTable.classList.remove('table-clickable');
-                    mainElement.appendChild(hivesTable);
-                }
-            }
-            loading.remove();
-            mainElement.classList.remove('hide');
-        });
-    } catch (error: any) {
-        createMessage(error, 'main-message', 'error');
-    }
-});

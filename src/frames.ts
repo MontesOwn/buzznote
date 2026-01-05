@@ -7,6 +7,7 @@ import {
     createCheckboxRow,
     createMessage
 } from "./modules/utils";
+import { navigateTo } from "./modules/navigate";
 
 let boxes: Box[] | null = null;
 let boxGroups: BoxGroup[] = [];
@@ -302,6 +303,6 @@ function finishInspection() {
     });
     sessionStorage.setItem("frames", JSON.stringify(recordedFrames));
     sessionStorage.setItem("averages", JSON.stringify(averages));
-    window.location.href = "/end";
+    navigateTo("/end", {replace: true});
 }
 

@@ -1,5 +1,6 @@
 import { initializeApp } from "./main";
 import { Inspection, type Average, type Frame, type RadioGroupConfig, type TempAndCondition } from "./models";
+import { navigateTo } from "./modules/navigate";
 import { clearMessages, createButton, createCheckbox, createItemTable, createListTable, createMessage, createRadioGroup, makeElement, storeMessage } from "./modules/utils";
 import { addAverage } from "./services/averageService";
 import { addNewFrame } from "./services/frameService";
@@ -7,6 +8,60 @@ import { createInspection } from "./services/inspectionService";
 
 const loading = document.getElementById('loading') as HTMLElement;
 const mainElement = document.querySelector('main') as HTMLElement;
+const backButton = document.getElementById("back-button") as HTMLElement;
+
+initializeApp("End of Inspection").then(() => {
+    try {
+        backButton.addEventListener('click', () => navigateTo('/'));
+        const date = sessionStorage.getItem('date');
+        const time = sessionStorage.getItem('time');
+        const hiveIdString = sessionStorage.getItem('hiveId');
+        const hiveName = sessionStorage.getItem('hiveName');
+        const weatherString = sessionStorage.getItem('weather');
+        const averagesString = sessionStorage.getItem('averages');
+        const framesString = sessionStorage.getItem('frames');
+        if (date && time && hiveIdString && hiveName && weatherString && averagesString && framesString) {
+            const hiveId: number = JSON.parse(hiveIdString);
+            const weather: TempAndCondition = JSON.parse(weatherString);
+            const averages = JSON.parse(averagesString);
+            const newInspection: Inspection = new Inspection(
+                0,
+                hiveId,
+                date,
+                hiveName,
+                time,
+                weather['temp'],
+                weather['condition'],
+                "",
+                "",
+                "",
+                "",
+                "",
+                "",
+                false,
+                false,
+                false,
+                false,
+                "",
+                ""
+            );
+            averages.forEach((average: Average) => {
+                if (average['queen_spotted'] !== "Not Spotted") {
+                    newInspection['queen_spotted'] = true;
+                }
+            });
+            loadEndOfInspectionForm(newInspection);
+            loading.classList.add('hide');
+            mainElement.classList.remove('hide');
+        } else {
+            mainElement.classList.add('hide');
+            throw new Error("Inspection data is missing. Please start the inspection over");
+        }
+    } catch (error: any) {
+        createMessage(error, "main-message", "error");
+    }
+
+});
 
 function submitEndOfInspectionData(formData: FormData, inspection: Inspection) {
     clearMessages();
@@ -155,61 +210,9 @@ async function sendData(frames: Frame[], averages: Average[], inspeciton: Inspec
         sessionStorage.removeItem('frames');
         storeMessage("All data submitted to database", "main-message", "check_circle");
         setTimeout(() => {
-            window.location.href = "/";
+            navigateTo("/", {replace: true});
         }, 2000);
     } catch (error: any) {
         throw error;
     }
 }
-
-initializeApp("End of Inspection").then(() => {
-    try {
-        const date = sessionStorage.getItem('date');
-        const time = sessionStorage.getItem('time');
-        const hiveIdString = sessionStorage.getItem('hiveId');
-        const hiveName = sessionStorage.getItem('hiveName');
-        const weatherString = sessionStorage.getItem('weather');
-        const averagesString = sessionStorage.getItem('averages');
-        const framesString = sessionStorage.getItem('frames');
-        if (date && time && hiveIdString && hiveName && weatherString && averagesString && framesString) {
-            const hiveId: number = JSON.parse(hiveIdString);
-            const weather: TempAndCondition = JSON.parse(weatherString);
-            const averages = JSON.parse(averagesString);
-            const newInspection: Inspection = new Inspection(
-                0,
-                hiveId,
-                date,
-                hiveName,
-                time,
-                weather['temp'],
-                weather['condition'],
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                false,
-                false,
-                false,
-                false,
-                "",
-                ""
-            );
-            averages.forEach((average: Average) => {
-                if (average['queen_spotted'] !== "Not Spotted") {
-                    newInspection['queen_spotted'] = true;
-                }
-            });
-            loadEndOfInspectionForm(newInspection);
-            loading.classList.add('hide');
-            mainElement.classList.remove('hide');
-        } else {
-            mainElement.classList.add('hide');
-            throw new Error("Inspection data is missing. Please start the inspection over");
-        }
-    } catch (error: any) {
-        createMessage(error, "main-message", "error");
-    }
-
-});

@@ -126,43 +126,9 @@ export class Average {
     }
 }
 
-export class AverageDetail {
-    public average_id: number;
-    public inspection_id: number;
-    public box_name: string;
-    public num_frames: number;
-    public honey: string;
-    public nectar: string;
-    public brood: string;
-    public queen_cells: string;
-    public drawn_comb: string;
-    public queen_spotted: string;
+export class AverageDetail extends Average {
     public showFrames: boolean = false;
-    constructor(
-        average_id: number,
-        inspection_id: number,
-        box_name: string,
-        num_frames: number,
-        honey: string,
-        nectar: string,
-        brood: string,
-        queen_cells: string,
-        drawn_comb: string,
-        queen_spotted: string
-    ) {
-        this.average_id = average_id;
-        this.inspection_id = inspection_id;
-        this.box_name = box_name;
-        this.num_frames = num_frames;
-        this.honey = honey;
-        this.nectar = nectar;
-        this.brood = brood;
-        this.queen_cells = queen_cells;
-        this.drawn_comb = drawn_comb;
-        this.queen_spotted = queen_spotted;
-    }
 }
-
 
 export class Hive {
     public hive_id: number;

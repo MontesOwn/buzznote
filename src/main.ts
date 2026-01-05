@@ -5,6 +5,7 @@ import {
 } from "./firebase/authService";
 import { auth } from "./firebase/firebase";
 import type { Message } from "./models";
+import { navigateTo } from "./modules/navigate";
 
 const signInButton = document.getElementById('sign-in') as HTMLElement;
 const signOutButton = document.getElementById('sign-out') as HTMLElement;
@@ -39,7 +40,7 @@ function setUpAuthListener() {
 export async function initializeApp(currentPage: string) {
   if (currentPage !== "") {
     // Set the page title
-    document.title = `${currentPage} - Buzznote`;
+    document.title = `${currentPage} - BuzzNote`;
   }
   //Wait for the DOM to load
   await new Promise<void>(resolve => {
@@ -89,7 +90,7 @@ export async function initializeApp(currentPage: string) {
     signOutUser();
   });
 
-  headerTitle.addEventListener('click', () => window.location.href = '/');
+  headerTitle.addEventListener('click', () => navigateTo("/"));
 
   //event listener for the user to press escape to close any modal that is open
   document.addEventListener("keydown", (e) => {

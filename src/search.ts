@@ -12,9 +12,67 @@ import {
     storeInspectionIds
  } from "./modules/utils";
  import { WeatherConditionsArray } from "./services/weatherService";
+import { navigateTo } from "./modules/navigate";
 
 const loading = document.getElementById("loading") as HTMLHtmlElement;
 const mainElement = document.querySelector('main') as HTMLElement;
+const backButton = document.getElementById('back-button') as HTMLElement;
+
+initializeApp("Search").then(() => {
+    backButton.addEventListener('click', () => navigateTo('/'));
+    const ChooseHeading = makeElement("h2", null, null, "Choose a search option");
+    mainElement.appendChild(ChooseHeading);
+    //Search options
+    const optionsButtonGroup = makeElement("section", "search-option-buttons", "search-button-group", null);
+    //Hive
+    const hivesButton = createButton("Hive", 'button', 'hive-button', 'button white');
+    hivesButton.addEventListener('click', async () => {
+        resetPage();
+        hivesButton.classList.remove('white');
+        hivesButton.classList.add('blue');
+        await searchHives();
+    });
+    optionsButtonGroup.appendChild(hivesButton);
+    //Date Range
+    const dateRangeButton = createButton("Date Range", "button", "date-range-button", "button white");
+    dateRangeButton.addEventListener('click', async () => {
+        resetPage();
+        dateRangeButton.classList.remove('white');
+        dateRangeButton.classList.add('blue');
+        await searchDateRange();
+    });
+    optionsButtonGroup.appendChild(dateRangeButton);
+    //Temp Range
+    const tempRangeButton = createButton("Temperature Range", "button", "temp-range-button", "button white");
+    tempRangeButton.addEventListener('click', async () => {
+        resetPage();
+        tempRangeButton.classList.remove('white');
+        tempRangeButton.classList.add('blue');
+        await searchTempRange();
+    });
+    optionsButtonGroup.appendChild(tempRangeButton);
+    //Weather condition
+    const weatherConditionButton = createButton("Weather Condition", "button", "weather-condition-button", "button white");
+    weatherConditionButton.addEventListener('click', async () => {
+        resetPage();
+        weatherConditionButton.classList.remove('white');
+        weatherConditionButton.classList.add('blue');
+        await searchWeatherCondition();
+    });
+    optionsButtonGroup.appendChild(weatherConditionButton);
+    //Queen Spotted
+    const queenSpottedButton = createButton("Queen Spotted", "button", "queen-spotted-button", "button white");
+    queenSpottedButton.addEventListener('click', async () => {
+        resetPage();
+        queenSpottedButton.classList.remove('white');
+        queenSpottedButton.classList.add('blue');
+        await searchQueenSpotted();
+    });
+    optionsButtonGroup.appendChild(queenSpottedButton);
+    mainElement.appendChild(optionsButtonGroup);
+    loading.classList.add('hide');
+    mainElement.classList.remove('hide');
+});
 
 function resetPage() {
     clearMessages();
@@ -31,8 +89,6 @@ function resetPage() {
             if (!button.classList.contains('white')) button.classList.add('white');
         });
     }
-    
-    
 }
 
 async function displayInspectionsList(inspecitonsList: InspectionListItem[]) {
@@ -44,7 +100,7 @@ async function displayInspectionsList(inspecitonsList: InspectionListItem[]) {
     inspectionsTable.classList.add('table-clickable');
     inspectionsTable.setAttribute('id', 'inspection-table');
     const rows = inspectionsTable.querySelectorAll('tr');
-    rows.forEach(row => row.addEventListener('click', () => window.location.href = `/past/inspectionDetail?sentFrom=search&&inspectionId=${row.id}`));
+    rows.forEach(row => row.addEventListener('click', () => navigateTo("/past/inspectionDetail", {params: {sentFrom: "search", inspectionId: row.id}})));
     loadingText.remove();
     mainElement.appendChild(inspectionsTable);
 }
@@ -222,58 +278,3 @@ async function searchQueenSpotted() {
     queenButtonRow.appendChild(notSpotted);
     mainElement.appendChild(queenButtonRow);
 }
-
-initializeApp("Search").then(() => {
-    const ChooseHeading = makeElement("h2", null, null, "Choose a search option");
-    mainElement.appendChild(ChooseHeading);
-    //Search options
-    const optionsButtonGroup = makeElement("section", "search-option-buttons", "search-button-group", null);
-    //Hive
-    const hivesButton = createButton("Hive", 'button', 'hive-button', 'button white');
-    hivesButton.addEventListener('click', async () => {
-        resetPage();
-        hivesButton.classList.remove('white');
-        hivesButton.classList.add('blue');
-        await searchHives();
-    });
-    optionsButtonGroup.appendChild(hivesButton);
-    //Date Range
-    const dateRangeButton = createButton("Date Range", "button", "date-range-button", "button white");
-    dateRangeButton.addEventListener('click', async () => {
-        resetPage();
-        dateRangeButton.classList.remove('white');
-        dateRangeButton.classList.add('blue');
-        await searchDateRange();
-    });
-    optionsButtonGroup.appendChild(dateRangeButton);
-    //Temp Range
-    const tempRangeButton = createButton("Temperature Range", "button", "temp-range-button", "button white");
-    tempRangeButton.addEventListener('click', async () => {
-        resetPage();
-        tempRangeButton.classList.remove('white');
-        tempRangeButton.classList.add('blue');
-        await searchTempRange();
-    });
-    optionsButtonGroup.appendChild(tempRangeButton);
-    //Weather condition
-    const weatherConditionButton = createButton("Weather Condition", "button", "weather-condition-button", "button white");
-    weatherConditionButton.addEventListener('click', async () => {
-        resetPage();
-        weatherConditionButton.classList.remove('white');
-        weatherConditionButton.classList.add('blue');
-        await searchWeatherCondition();
-    });
-    optionsButtonGroup.appendChild(weatherConditionButton);
-    //Queen Spotted
-    const queenSpottedButton = createButton("Queen Spotted", "button", "queen-spotted-button", "button white");
-    queenSpottedButton.addEventListener('click', async () => {
-        resetPage();
-        queenSpottedButton.classList.remove('white');
-        queenSpottedButton.classList.add('blue');
-        await searchQueenSpotted();
-    });
-    optionsButtonGroup.appendChild(queenSpottedButton);
-    mainElement.appendChild(optionsButtonGroup);
-    loading.classList.add('hide');
-    mainElement.classList.remove('hide');
-});

@@ -1,6 +1,6 @@
 import type { Box } from "../models";
 
-const baseURL: string = "https://montesown.com/buzznote-api/boxes";
+const baseURL: string = "https://buzznote-api.montesown.com/boxes";
 
 export async function getBoxesForHiveID(hiveID: number, active: boolean): Promise<Box[]> {
   let url: string = "";

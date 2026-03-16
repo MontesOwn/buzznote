@@ -1,6 +1,6 @@
 import { Average, AverageDetail } from "../models";
 
-const baseURL: string = "https://montesown.com/buzznote-api/averages";
+const baseURL: string = "https://buzznote-api.montesown.com/averages";
 
 export async function getAverageForId(inspectionId: number): Promise<AverageDetail[] | null> {
     try {

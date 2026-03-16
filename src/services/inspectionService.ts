@@ -1,6 +1,6 @@
 import { Inspection, InspectionListItem } from "../models";
 
-const baseURL: string = "https://montesown.com/buzznote-api/inspections";
+const baseURL: string = "https://buzznote-api.montesown.com/inspections";
 
 export async function getListOfInspections(): Promise<InspectionListItem[]> {
     try {

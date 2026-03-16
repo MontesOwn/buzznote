@@ -1,6 +1,6 @@
 import { Frame } from "../models";
 
-const baseURL: string = "https://montesown.com/buzznote-api/frames";
+const baseURL: string = "https://buzznote-api.montesown.com/frames";
 
 export async function getFramesForInspectionIDAndBoxName(inspectionID: number, boxName: string): Promise<Frame[]> {
     try {

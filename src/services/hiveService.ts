@@ -1,6 +1,6 @@
 import { Hive } from "../models";
 
-const baseURL: string = "https://montesown.com/buzznote-api/hives";
+const baseURL: string = "https://buzznote-api.montesown.com/hives";
 
 export async function getAllHives(active: boolean): Promise<Hive[]> {
     try {

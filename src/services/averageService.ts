@@ -1,6 +1,6 @@
-import { Average, AverageDetail } from "../models";
+import { Average, AverageDetail, BASE_URL } from "../models";
 
-const baseURL: string = "https://buzznote-api.montesown.com/averages";
+const baseURL: string = `${BASE_URL}/averages`;
 
 export async function getAverageForId(inspectionId: number): Promise<AverageDetail[] | null> {
     try {

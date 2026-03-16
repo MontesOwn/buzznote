@@ -294,3 +294,5 @@ export interface BoxGroup {
     frames: FrameFormGroup[];
     recorded: boolean;
 }
+
+export const BASE_URL: string = "https://buzznote-api.montesown.com";

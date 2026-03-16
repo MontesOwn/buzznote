@@ -1,6 +1,6 @@
-import { Hive } from "../models";
+import { Hive, BASE_URL } from "../models";
 
-const baseURL: string = "https://buzznote-api.montesown.com/hives";
+const baseURL: string = `${BASE_URL}/hives`;
 
 export async function getAllHives(active: boolean): Promise<Hive[]> {
     try {

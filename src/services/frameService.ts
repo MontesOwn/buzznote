@@ -1,6 +1,6 @@
-import { Frame } from "../models";
+import { Frame, BASE_URL } from "../models";
 
-const baseURL: string = "https://buzznote-api.montesown.com/frames";
+const baseURL: string = `${BASE_URL}/frames`;
 
 export async function getFramesForInspectionIDAndBoxName(inspectionID: number, boxName: string): Promise<Frame[]> {
     try {

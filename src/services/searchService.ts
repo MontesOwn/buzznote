@@ -1,7 +1,7 @@
-import type { InspectionListItem } from "../models";
+import { type InspectionListItem, BASE_URL } from "../models";
 
 
-const baseURL: string = "https://buzznote-api.montesown.com/search/";
+const baseURL: string = `${BASE_URL}/search/`;
 
 export async function getInspectionsForHiveID(hiveID: number): Promise<InspectionListItem[]> {
     try {
